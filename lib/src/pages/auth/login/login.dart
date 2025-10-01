@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
 import 'package:lexxi/injection.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
+import 'package:lexxi/src/global/extensions/build_context_ext.dart';
 import 'package:lexxi/src/global/widgets/gradient_button.dart';
 import 'package:lexxi/src/global/widgets/rounded_text_field.dart';
 import 'package:lexxi/src/providers/data_user_provider.dart';
@@ -23,8 +24,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  AuthService? _authService; // Obtiene el servicio de autenticación
-
+  AuthService? _authService;
   String? email, password;
 
   final FocusNode _currentFocusNode = FocusNode();
@@ -63,6 +63,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: ColorPalette.primary,
       body: SizedBox(

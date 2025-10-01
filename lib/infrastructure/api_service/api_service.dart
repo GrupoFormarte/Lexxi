@@ -1,25 +1,17 @@
 import 'dart:convert';
 
+import 'package:lexxi/config/env_config.dart';
 import 'package:lexxi/utils/loogers_custom.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
 @injectable
 class ApiService {
-  // String sU = "https://dev-mongo.plataformapodium.com";
-  String baseUrl = 'https://app.formarte.co/api';
-  // String baseUrl2 = "https://api.formarte.co/api";
-  // String baseUrl = 'https://dev-mongo.plataformapodium.com/api';
-  String baseUrl2 = "https://api.formarte.co/api";
+  // Las URLs ahora se obtienen desde las variables de entorno
+  String get baseUrl => EnvConfig.baseUrl;
+  String get baseUrl2 => EnvConfig.baseUrl2;
 
-  ApiService() {
-    // if (kDebugMode) {
-    //   baseUrl =
-    //       "https://105kt18s-3000.use2.devtunnels.ms/api";
-    //   baseUrl2 =
-    //       "https://105kt18s-3000.use2.devtunnels.ms/api";
-    // }
-  }
+  ApiService();
 
   Future<Map<String, dynamic>?> create(
       {required String collectionName,
@@ -82,13 +74,10 @@ class ApiService {
   Future<Map<String, dynamic>?> getById(
       {required String collectionName, required String id}) async {
     final response = await http.get(Uri.parse('$baseUrl/$collectionName/$id'));
-    print('$baseUrl/$collectionName/$id');
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      print(
-          'Failed to get document by ID:${response.statusCode} - $baseUrl/$collectionName/$id - ${response.body}');
       return null;
     }
   }

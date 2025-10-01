@@ -4,6 +4,7 @@ import 'dart:io';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lexxi/config/env_config.dart';
 import 'package:lexxi/src/global/controllers/theme_controller.dart';
 import 'package:lexxi/src/providers/data_user_provider.dart';
 import 'package:lexxi/src/providers/grado_provider.dart';
@@ -25,7 +26,11 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    ignoreBadCertificates();
+
+  // Cargar variables de entorno
+  await EnvConfig.load();
+
+  ignoreBadCertificates();
 
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
