@@ -435,18 +435,17 @@ class _ConfigScreenState extends State<ConfigScreen> {
         const DarwinNotificationDetails(); // Actualización para iOS
     var platformDetails = NotificationDetails(
         android: androidDetails, iOS: iOSDetails, macOS: iOSDetails);
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Recordatorio Diario',
-      '¡Es hora de tu recordatorio diario!',
-      scheduledDate,
-      platformDetails,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents:
-          DateTimeComponents.time, // Esto asegura la repetición diaria
-    );
+ await flutterLocalNotificationsPlugin.zonedSchedule(
+  0, // id de la notificación
+  'Recordatorio Diario',
+  '¡Es hora de tu recordatorio diario!',
+  scheduledDate, // tz.TZDateTime
+  platformDetails, // NotificationDetails con Android/iOS configs
+  androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  matchDateTimeComponents: DateTimeComponents.time, // repetición diaria
+  // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, 
+  // (puedes dejarlo o quitarlo, funciona igual en Android, pero en iOS aún lo mantiene)
+);
   }
 
   Future<void> showPendingNotifications() async {

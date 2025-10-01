@@ -1,7 +1,7 @@
 name: lexxi
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.39+39
 
 environment:
   sdk: ^3.9.0
@@ -25,8 +25,8 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   flutter_html: ^3.0.0-beta.2
   logger: ^2.0.2+1
-  flutter_local_notifications: ^17.2.3
-  timezone: ^0.9.2
+  flutter_local_notifications: ^19.4.2
+  timezone: ^0.10.1
   html: ^0.15.4
   flutter_tex: ^4.0.6
   url_launcher: ^6.3.0

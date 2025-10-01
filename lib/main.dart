@@ -36,24 +36,14 @@ Future<void> main() async {
   tz.setLocalLocation(bogota);
   // Configuración inicial para Android e iOS
   var initializationSettingsAndroid =
-      const AndroidInitializationSettings('app_icon');
+      const AndroidInitializationSettings('@mipmap/ic_launcher');
   // Configuración inicial para iOS
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
     requestAlertPermission: true,
     requestBadgePermission: true,
     requestSoundPermission: true,
-    onDidReceiveLocalNotification:
-        (int id, String? title, String? body, String? payload) async {
-      // didReceiveLocalNotificationStream.add(
-      //   ReceivedNotification(
-      //     id: id,
-      //     title: title,
-      //     body: body,
-      //     payload: payload,
-      //   ),
-      // ); 
-    },
+
     // notificationCategories: darwinNotificationCategories,
   ); // Puedes añadir configuraciones específicas de iOS aquí
 

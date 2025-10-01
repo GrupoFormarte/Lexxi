@@ -32,7 +32,6 @@ import 'package:sizer/sizer.dart';
 import '../../global/widgets/flat_color_button.dart';
 
 @RoutePage() // Add this annotation to your routable pages
-
 class ResultView extends StatefulWidget {
   final bool isSimulacro;
   final String? typeExam;
@@ -41,14 +40,15 @@ class ResultView extends StatefulWidget {
   final int? nPreguntas;
   final int timePassed;
 
-  const ResultView(
-      {super.key,
-      this.isSimulacro = false,
-      required this.grado,
-      this.typeExam,
-      this.idGrado,
-      this.timePassed = 0,
-      this.nPreguntas});
+  const ResultView({
+    super.key,
+    this.isSimulacro = false,
+    required this.grado,
+    this.typeExam,
+    this.idGrado,
+    this.timePassed = 0,
+    this.nPreguntas,
+  });
 
   @override
   State<ResultView> createState() => _ResultViewState();
@@ -58,8 +58,9 @@ class _ResultViewState extends State<ResultView>
     with SingleTickerProviderStateMixin {
   late ConfettiController _controllerCenter;
 
-  ValueNotifier<ResultQuizModel> _resultQuizModel =
-      ValueNotifier(ResultQuizModel());
+  ValueNotifier<ResultQuizModel> _resultQuizModel = ValueNotifier(
+    ResultQuizModel(),
+  );
   ValueNotifier<RiveAnimationController<dynamic>>? _controller;
   // AsignaturaService? _asignaturaService;
   final StudentService _studentService = getIt.get<StudentService>();
@@ -85,11 +86,13 @@ class _ResultViewState extends State<ResultView>
   @override
   void initState() {
     super.initState();
-    _controllerCenter =
-        ConfettiController(duration: const Duration(seconds: 10));
+    _controllerCenter = ConfettiController(
+      duration: const Duration(seconds: 10),
+    );
 
-    _resultQuizModel =
-        ValueNotifier(context.read<ResumenQuizProvider>().resultQuizModel);
+    _resultQuizModel = ValueNotifier(
+      context.read<ResumenQuizProvider>().resultQuizModel,
+    );
     result = _resultQuizModel.value.calcularNotaFinal();
 
     // _asignaturaService = getIt.get<AsignaturaService>();
@@ -118,8 +121,9 @@ class _ResultViewState extends State<ResultView>
     print(['Grado_id', widget.idGrado]);
     final authService = getIt.get<AuthService>();
     final idGrado = context.read<GradoProvider>().idGrado;
-    academicLevelModel.value =
-        await academyLevels.getAcademicLevelById(id: idGrado);
+    academicLevelModel.value = await academyLevels.getAcademicLevelById(
+      id: idGrado,
+    );
     dataUser = await authService.getUserLocal();
     // permision = json.decode(dataUser!.typeUser!);
     student = await _studentService.getInfo();
@@ -153,20 +157,27 @@ class _ResultViewState extends State<ResultView>
       }
       final r = _resultQuizModel.value.calcularNotaFinal();
       if (widget.idGrado != null) {
-        final gradoSelected = student!.grados!
-            .firstWhere((element) => element.idGrado == widget.idGrado);
+        final gradoSelected = student!.grados!.firstWhere(
+          (element) => element.idGrado == widget.idGrado,
+        );
         gradoSelected.scoreSimulacro = r;
         if (widget.typeExam == "Supérate") {
-          gradoSelected.progressHistory.add(ProgressHistory(
+          gradoSelected.progressHistory.add(
+            ProgressHistory(
               date: DateTime.now().toString(),
               duration: "",
               result: r.toString(),
-              numberSession: widget.nPreguntas.toString()));
+              numberSession: widget.nPreguntas.toString(),
+            ),
+          );
         }
         if (widget.typeExam == "Rétate") {
-          gradoSelected.historyTime.add(HistoryTime(
+          gradoSelected.historyTime.add(
+            HistoryTime(
               date: DateTime.now().toString(),
-              time: formatDuration(widget.timePassed)));
+              time: formatDuration(widget.timePassed),
+            ),
+          );
         }
 
         for (var i = 0; i < student!.grados!.length; i++) {
@@ -207,14 +218,14 @@ class _ResultViewState extends State<ResultView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        SizedBox(
-          width: 100.w,
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              ValueListenableBuilder(
+      body: Stack(
+        children: [
+          SizedBox(
+            width: 100.w,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ValueListenableBuilder(
                   valueListenable: _resultQuizModel,
                   builder: (context, value, _) {
                     // value.respuestas[0].
@@ -236,17 +247,18 @@ class _ResultViewState extends State<ResultView>
                         //   child: _antorcha(
                         //       width: 80, height: 180, angle: 0.5, opacity: 0.7),
                         // ),
-                        _bodyFree(value)
+                        _bodyFree(value),
                       ],
                     );
-                  }),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    )
-        // : const Center(child: CircularProgressIndicator()),
-        );
+        ],
+      ),
+      // : const Center(child: CircularProgressIndicator()),
+    );
   }
 
   String formatDuration(int totalSeconds) {
@@ -264,363 +276,204 @@ class _ResultViewState extends State<ResultView>
   }
 
   Widget _bodyFree(ResultQuizModel value) {
-// ValueListenableBuilder(valueListenable: ,)
+    // ValueListenableBuilder(valueListenable: ,)
     return ValueListenableBuilder(
-        valueListenable: academicLevelModel,
-        builder: (context, academy, _) {
-          if (academy == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // Obtén typeLevel de forma segura
-          final typeLevel = academy.compare(value.respuestaCo.toString());
-          // Verifica si typeLevel es nulo y maneja ese caso
-          if (typeLevel == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // Ahora que estamos seguros de que typeLevel tiene datos, procede a calcular level
-          final level =
-              typeLevel.findLevelByPuntaje(value.respuestaCo.toString());
-          Color colorLevel = Color(int.parse("0xff${typeLevel.color!}"));
-          return Stack(
-            children: [
-              SizedBox(
-                width: 100.w,
-                height: 100.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          height: 50,
-                        ),
-                        ValueListenableBuilder(
-                            valueListenable: _controller!,
-                            builder: (context, value, _) {
-                              return Stack(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: ConfettiWidget(
-                                      confettiController: _controllerCenter,
-                                      blastDirectionality: BlastDirectionality
-                                          .explosive, // don't specify a direction, blast randomly
-                                      shouldLoop:
-                                          true, // start again as soon as the animation is finished
-                                      colors: const [
-                                        Colors.green,
-                                        Colors.blue,
-                                        Colors.pink,
-                                        Colors.orange,
-                                        Colors.purple
-                                      ], // manually specify the colors to be used
-                                      createParticlePath:
-                                          drawStar, // define a custom shape/path.
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 100.w,
-                                    child: Column(
-                                      children: [
-                                        // SizedBox(
-                                        //   width: 127,
-                                        //   height: 127,
-                                        //   child: MyRiveAnimation(
-                                        //       color: colorLevel,
-                                        //       previeColor: colorLevel,
-                                        //       level: level!.level!),
-                                        // ),
-
-                                        // ScaleTransition(
-                                        //   scale: _animation,
-                                        //   child: ,
-                                        // ),
-
-                                        SizedBox(
-                                          width: 127,
-                                          height: 127,
-                                          child: MyRiveAnimation(
-                                            color: colorLevel,
-                                            previeColor: colorLevel,
-                                            level: level!.level!,
-                                          ),
-                                        ),
-                                        Text(
-                                          typeLevel.name!,
-                                          style: const TextStyle(
-                                            fontFamily: 'Open Sans',
-                                            fontSize: 20,
-                                            color: Color(0xffffffff),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          softWrap: false,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                        Container(
-                          height: 30,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _animatedInfo(
-                              value.calcularPorcentajeRespuestasNulas(),
-                              "Completado",
-                              suffix: '%',
-                            ),
-                            _animatedInfo(
-                              value.respuestas!.length.toString(),
-                              "Preguntas",
-                            ),
-                            _animatedInfo(
-                              value.preguntasCorrectas(),
-                              "Correctas",
-                            ),
-                            _animatedInfo(
-                              value.preguntasInCorrectas(),
-                              "Incorrectas",
-                            ),
-                          ],
-                        ),
-                        Container(
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: 100.w,
-                          height: 400,
-                          child: Scrollbar(
-                            child: Column(
-                              children: _slidersRow(value),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 40),
-                  width: 100.w,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // if (dataUser!.grado == null)
-                          // SizedBox(
-                          //   width: 90,
-                          //   child: FlatColorButton(
-                          //     color: AppColors.blueDark,
-                          //     padding: 0,
-                          //     text: const Center(
-                          //       child: Icon(Icons.reply_all_rounded,
-                          //           color: AppColors.blueDark),
-                          //     ),
-                          //     onPressed: () {
-                          //       context.router.navigateNamed('/');
-                          //     },
-                          //   ),
-                          // ),
-                        SizedBox(
-                          width: 62.w,
-                          child: FlatColorButton(
-                            color: AppColors.blueDark,
-                            text: Text(
-                              "Terminar",
-                              style: context.textTheme.titleLarge!
-                                  .copyWith(color: AppColors.blueDark),
-                            ),
-                            onPressed: () {
-                              if (student != null) {
-                                context.router.pushNamed('/');
-                                return;
-                              }
-                              // showVideoAlert(
-                              //     "assets/videos/Calendario-B2025_1.mp4",
-                              //     () {});
-
-                              showPromotionDialog(
-                                context,
-                                promotion: _promotion,
-                                onClik: () {
-                                  final message =
-                                      '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
-                                      'Detalles: ${_promotion.description}';
-                                  launchWhatsAppUri('+573183491375', message);
-                                  context.router.pushNamed('/');
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          );
-        });
-  }
-
-  Widget _body(ResultQuizModel value) {
-// ValueListenableBuilder(valueListenable: ,)
-    return ValueListenableBuilder(
-        valueListenable: academicLevelModel,
-        builder: (context, academy, _) {
-          if (academy == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          // Obtén typeLevel de forma segura
-          final typeLevel = academy.compare(value.respuestaCo.toString());
-
-          // Verifica si typeLevel es nulo y maneja ese caso
-          if (typeLevel == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          // Ahora que estamos seguros de que typeLevel tiene datos, procede a calcular level
-          final level =
-              typeLevel.findLevelByPuntaje(value.respuestaCo.toString());
-          Color colorLevel = Color(int.parse("0xff${typeLevel.color!}"));
-
-          return SizedBox(
-            width: 100.w,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      height: 50,
-                    ),
-                    SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: CirclesLevel(
-                        title: 'Tu nota',
-                        puntaje: result.toString(),
-                      ),
-                    ),
-                    Container(
-                      height: 30,
-                    ),
-                    const Text(
-                      'Resumen de Simulacro',
-                      style: TextStyle(
-                        fontFamily: 'Open Sans',
-                        fontSize: 14,
-                        color: Color(0xffffffff),
-                        fontWeight: FontWeight.w700,
-                      ),
-                      softWrap: false,
-                    ),
-                    Container(
-                      height: 30,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _info("${value.calcularPorcentajeRespuestasNulas()}%",
-                            "Completado"),
-                        _info(value.respuestas!.length.toString(), "Preguntas"),
-                        _info(value.preguntasCorrectas(), "Correctas"),
-                        _info(value.preguntasInCorrectas(), "Incorrectas"),
-                      ],
-                    ),
-                    Container(
-                      height: 30,
-                    ),
-                    ValueListenableBuilder(
+      valueListenable: academicLevelModel,
+      builder: (context, academy, _) {
+        if (academy == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        // Obtén typeLevel de forma segura
+        final typeLevel = academy.compare(value.respuestaCo.toString());
+        // Verifica si typeLevel es nulo y maneja ese caso
+        if (typeLevel == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        // Ahora que estamos seguros de que typeLevel tiene datos, procede a calcular level
+        final level = typeLevel.findLevelByPuntaje(
+          value.respuestaCo.toString(),
+        );
+        Color colorLevel = Color(int.parse("0xff${typeLevel.color!}"));
+        return Stack(
+          children: [
+            SizedBox(
+              width: 100.w,
+              height: 100.h,
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Container(height: 50),
+                      ValueListenableBuilder(
                         valueListenable: _controller!,
                         builder: (context, value, _) {
-                          return SizedBox(
-                              width: 127,
-                              height: 127,
-                              // child: Hero(
-                              //   tag: '1',
-                              //   child: !widget.isSimulacro
-                              //       ? MedalGradient(
-                              //           controller: [_controller!.value],
-                              //         )
-                              //       : const MedalGolden(),
-                              // ),
+                          return Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: ConfettiWidget(
+                                  confettiController: _controllerCenter,
+                                  blastDirectionality: BlastDirectionality
+                                      .explosive, // don't specify a direction, blast randomly
+                                  shouldLoop:
+                                      true, // start again as soon as the animation is finished
+                                  colors: const [
+                                    Colors.green,
+                                    Colors.blue,
+                                    Colors.pink,
+                                    Colors.orange,
+                                    Colors.purple,
+                                  ], // manually specify the colors to be used
+                                  createParticlePath:
+                                      drawStar, // define a custom shape/path.
+                                ),
+                              ),
+                              SizedBox(
+                                width: 100.w,
+                                child: Column(
+                                  children: [
+                                    // SizedBox(
+                                    //   width: 127,
+                                    //   height: 127,
+                                    //   child: MyRiveAnimation(
+                                    //       color: colorLevel,
+                                    //       previeColor: colorLevel,
+                                    //       level: level!.level!),
+                                    // ),
 
-                              child: MyRiveAnimation(
-                                  color: colorLevel,
-                                  previeColor: colorLevel,
-                                  level: level!.level!));
-                        }),
-                    SizedBox(
-                      width: 100.w,
-                      height: 200,
-                      child: Scrollbar(
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: _slidersRow(value),
+                                    // ScaleTransition(
+                                    //   scale: _animation,
+                                    //   child: ,
+                                    // ),
+                                    SizedBox(
+                                      width: 127,
+                                      height: 127,
+                                      child: MyRiveAnimation(
+                                        color: colorLevel,
+                                        previeColor: colorLevel,
+                                        level: level!.level!,
+                                      ),
+                                    ),
+                                    Text(
+                                      typeLevel.name!,
+                                      style: const TextStyle(
+                                        fontFamily: 'Open Sans',
+                                        fontSize: 20,
+                                        color: Color(0xffffffff),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      softWrap: false,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      Container(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _animatedInfo(
+                            value.calcularPorcentajeRespuestasNulas(),
+                            "Completado",
+                            suffix: '%',
+                          ),
+                          _animatedInfo(
+                            value.respuestas!.length.toString(),
+                            "Preguntas",
+                          ),
+                          _animatedInfo(
+                            value.preguntasCorrectas(),
+                            "Correctas",
+                          ),
+                          _animatedInfo(
+                            value.preguntasInCorrectas(),
+                            "Incorrectas",
+                          ),
+                        ],
+                      ),
+                      Container(height: 30),
+                      SizedBox(
+                        width: 100.w,
+                        // height: 400,
+                        child: Scrollbar(
+                          child: Column(children: _slidersRow(value)),
                         ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 40),
-                      width: 100.w,
-                      child: Center(
-                        child: SizedBox(
-                          width: 62.w,
-                          child: FlatColorButton(
-                            color: AppColors.blueDark,
-                            text: Text(
-                              "Terminar",
-                              style: context.textTheme.titleLarge!
-                                  .copyWith(color: AppColors.blueDark),
-                            ),
-                            onPressed: () {
-                              for (var v in value.respuestas!) {
-                                final r = v;
-                                r.dateCreated = DateTime.now().toString();
-                                r.idEstudiante = idUser.toString();
-                                r.respuesta = r.respuesta ?? false;
-                                r.idGrado = widget.idGrado;
-                                if (r.respuesta!) {
-                                  for (var i in student!.grados!) {
-                                    if (i.grado == widget.grado) {
-                                      for (var asig in i.asignaturas!) {
-                                        if (asig.asignatura == r.asignatura) {
-                                          r.idAsignatura = asig.asignaturaId;
-
-                                          asig.score++;
-                                        }
-                                      }
+                      Container(
+                        padding: const EdgeInsets.only(top: 40),
+                        width: 100.w,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // if (dataUser!.grado == null)
+                              // SizedBox(
+                              //   width: 90,
+                              //   child: FlatColorButton(
+                              //     color: AppColors.blueDark,
+                              //     padding: 0,
+                              //     text: const Center(
+                              //       child: Icon(Icons.reply_all_rounded,
+                              //           color: AppColors.blueDark),
+                              //     ),
+                              //     onPressed: () {
+                              //       context.router.navigateNamed('/');
+                              //     },
+                              //   ),
+                              // ),
+                              SizedBox(
+                                width: 62.w,
+                                child: FlatColorButton(
+                                  color: AppColors.blueDark,
+                                  text: Text(
+                                    "Terminar",
+                                    style: context.textTheme.titleLarge!
+                                        .copyWith(color: AppColors.blueDark),
+                                  ),
+                                  onPressed: () {
+                                    if (student != null) {
+                                      context.router.pushNamed('/');
+                                      return;
                                     }
-                                  }
-                                }
-                                _studentService.update(student!);
-                                _studentService.saveStudentResponse(r);
-                              }
-                              showVideoAlert(
-                                  "assets/videos/Calendario-B2025_1.mp4", () {
-                                context.router.pushNamed('/');
-                              });
-                            },
+                                    // showVideoAlert(
+                                    //     "assets/videos/Calendario-B2025_1.mp4",
+                                    //     () {});
+
+                                    showPromotionDialog(
+                                      context,
+                                      promotion: _promotion,
+                                      onClik: () {
+                                        final message =
+                                            '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
+                                            'Detalles: ${_promotion.description}';
+                                        launchWhatsAppUri(
+                                          '+573183491375',
+                                          message,
+                                        );
+                                        context.router.pushNamed('/');
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    )
-                  ],
-                )
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          );
-        });
+          ],
+        );
+      },
+    );
   }
 
   List<Widget> _slidersRow(ResultQuizModel value) {
@@ -651,16 +504,18 @@ class _ResultViewState extends State<ResultView>
                       thumbShape: SliderComponentShape.noThumb,
                       showValueIndicator: ShowValueIndicator.always,
                       trackShape: const GradientRectSliderTrackShape(
-                          gradient: AppColors.linealGrdientGreen,
-                          darkenInactive: false),
+                        gradient: AppColors.linealGrdientGreen,
+                        darkenInactive: false,
+                      ),
                     ),
                     child: Slider(
-                        value: sliderValue,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        label: 20.round().toString(),
-                        onChanged: (v) {}),
+                      value: sliderValue,
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      label: 20.round().toString(),
+                      onChanged: (v) {},
+                    ),
                   ),
                 ),
                 Text(
@@ -687,15 +542,18 @@ class _ResultViewState extends State<ResultView>
                 textAlign: TextAlign.center,
                 softWrap: false,
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _animatedInfo(String targetValueString, String label,
-      {String suffix = ''}) {
+  Widget _animatedInfo(
+    String targetValueString,
+    String label, {
+    String suffix = '',
+  }) {
     // Convertimos el String a double para la animación
     double targetValue = double.tryParse(targetValueString) ?? 0;
 
@@ -747,7 +605,7 @@ class _ResultViewState extends State<ResultView>
             fontSize: 15,
             color: Color(0xffffffff),
           ),
-        )
+        ),
       ],
     );
   }
@@ -768,20 +626,25 @@ class _ResultViewState extends State<ResultView>
     path.moveTo(size.width, halfWidth);
 
     for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      path.lineTo(halfWidth + externalRadius * cos(step),
-          halfWidth + externalRadius * sin(step));
-      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
-          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+      path.lineTo(
+        halfWidth + externalRadius * cos(step),
+        halfWidth + externalRadius * sin(step),
+      );
+      path.lineTo(
+        halfWidth + internalRadius * cos(step + halfDegreesPerStep),
+        halfWidth + internalRadius * sin(step + halfDegreesPerStep),
+      );
     }
     path.close();
     return path;
   }
 
-  Widget _antorcha(
-      {double width = 100,
-      double height = 250,
-      double opacity = 1,
-      double angle = 0.0}) {
+  Widget _antorcha({
+    double width = 100,
+    double height = 250,
+    double opacity = 1,
+    double angle = 0.0,
+  }) {
     return Transform.rotate(
       angle: angle,
       child: Opacity(

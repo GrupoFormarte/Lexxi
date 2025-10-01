@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
 
-class RoundedTextField extends StatelessWidget {
+class RoundedTextField extends StatefulWidget {
   final String hintText;
   final double width;
   final bool center;
@@ -39,48 +39,74 @@ class RoundedTextField extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<RoundedTextField> createState() => _RoundedTextFieldState();
+}
+
+class _RoundedTextFieldState extends State<RoundedTextField> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      margin: margin,
+      width: widget.width,
+      margin: widget.margin,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50.0),
         // color: backgroundColor,
         // border: Border.all(color: borderColor),
       ),
       child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        onChanged: onChanged,
-        onFieldSubmitted: onSubmitted,
-        validator: validator,
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        keyboardType: widget.keyboardType,
+        obscureText: _isObscured,
+        onChanged: widget.onChanged,
+        onFieldSubmitted: widget.onSubmitted,
+        validator: widget.validator,
         style: const TextStyle(color: AppColors.white, fontSize: 15),
         textAlign: TextAlign.start,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50.0),
             borderSide: BorderSide(
-                color: enableBoder ? Colors.white : ColorPalette.primary),
+                color: widget.enableBoder ? Colors.white : ColorPalette.primary),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50.0),
             borderSide: BorderSide(
-                color: enableBoder ? Colors.white : ColorPalette.primary),
+                color: widget.enableBoder ? Colors.white : ColorPalette.primary),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50.0),
             borderSide: BorderSide(
-                color: enableBoder ? Colors.white : ColorPalette.primary,
+                color: widget.enableBoder ? Colors.white : ColorPalette.primary,
                 width: 2.0),
           ),
-          hintText: hintText,
-          hintStyle: TextStyle(color: placeholderColor),
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: widget.placeholderColor),
           filled: true,
           fillColor: ColorPalette.primary.withOpacity(0.5),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+          suffixIcon: widget.obscureText
+              ? IconButton(
+                  icon: Icon(
+                    _isObscured ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isObscured = !_isObscured;
+                    });
+                  },
+                )
+              : null,
         ),
       ),
     );

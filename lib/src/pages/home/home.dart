@@ -51,8 +51,9 @@ class _HomeState extends State<Home> {
 
   Future<void> loadDataUser() async {
     try {
-      academy =
-          await academyUse.getAcademicLevelById(id: "668d39d63abc9ff60a7979d2");
+      academy = await academyUse.getAcademicLevelById(
+        id: "668d39d63abc9ff60a7979d2",
+      );
 
       final user = context.read<DataUserProvider>().userViewModel;
       final gradosAx =
@@ -71,7 +72,7 @@ class _HomeState extends State<Home> {
         }
         // Recorrer los grados en la lista gradosAx
         final Map<String, Grado> gradosMap = {
-          for (var g in student!.grados ?? []) g.grado!: g
+          for (var g in student!.grados ?? []) g.grado!: g,
         };
 
         for (var gaux in gradosAx) {
@@ -83,13 +84,14 @@ class _HomeState extends State<Home> {
           }
 
           // Ejecutar en paralelo las llamadas a _level.get
-          final results =
-              await Future.wait(grado.asignaturas!.map((asignatura) {
-            return _level.get(
-              id: grado.idGrado!,
-              score: asignatura.score.toString(),
-            );
-          }));
+          final results = await Future.wait(
+            grado.asignaturas!.map((asignatura) {
+              return _level.get(
+                id: grado.idGrado!,
+                score: asignatura.score.toString(),
+              );
+            }),
+          );
 
           for (int i = 0; i < grado.asignaturas!.length; i++) {
             final asignatura = grado.asignaturas![i];
@@ -106,7 +108,8 @@ class _HomeState extends State<Home> {
       }
 
       final asignaturasList = await Future.wait(
-          listGrado.map((g) => asignaturas(g.code!, g.value!)));
+        listGrado.map((g) => asignaturas(g.code!, g.value!)),
+      );
       // Si el estudiante no existe, crear uno nuevo
       for (int i = 0; i < listGrado.length; i++) {
         final g = listGrado[i];
@@ -124,14 +127,17 @@ class _HomeState extends State<Home> {
       student = await _studentService.getInfo();
       if (student == null) {
         _showError(
-            'No se pudo obtener la información del estudiante después de la creación.');
+          'No se pudo obtener la información del estudiante después de la creación.',
+        );
         return;
       }
       for (var grado in student!.grados!) {
         if (grado.asignaturas == null || grado.asignaturas!.isEmpty) continue;
         for (var asignatura in grado.asignaturas!) {
           final data = await _level.get(
-              id: grado.idGrado!, score: asignatura.score.toString());
+            id: grado.idGrado!,
+            score: asignatura.score.toString(),
+          );
           if (data == null) {
             continue;
           }
@@ -150,9 +156,9 @@ class _HomeState extends State<Home> {
   void _showError(String message) {
     // Asegúrate de que el contexto es válido antes de mostrar el Snackbar
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -192,7 +198,10 @@ class _HomeState extends State<Home> {
       final childIds = gradoData.first.childrents;
 
       final asignaturas = await item.getItemsByIdsBulk(
-          collection: "get-areas/bulk", ids: childIds, grado: namelargeGrado);
+        collection: "get-areas/bulk",
+        ids: childIds,
+        grado: namelargeGrado,
+      );
       for (var i in asignaturas) {
         print(i.toJson());
       }
@@ -209,7 +218,9 @@ class _HomeState extends State<Home> {
   }
 
   void compararAsignaturasProfundamente(
-      List<Item> asignaturas, List<Item> asignaturasAux) {
+    List<Item> asignaturas,
+    List<Item> asignaturasAux,
+  ) {
     final maxLength = max(asignaturas.length, asignaturasAux.length);
 
     for (int i = 0; i < maxLength; i++) {
@@ -266,7 +277,8 @@ class _HomeState extends State<Home> {
 
       if (!hayDiferencia) {
         print(
-            '✅ asignaturas[$i] y asignaturasAux[$i] son completamente iguales');
+          '✅ asignaturas[$i] y asignaturasAux[$i] son completamente iguales',
+        );
       }
     }
   }
@@ -277,147 +289,168 @@ class _HomeState extends State<Home> {
     return Stack(
       children: [
         CustomBody(
-            appBar: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Logo(),
-                GestureDetector(
-                  onTap: () {
-                    context.router.pushNamed('/profile');
+          appBar: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Logo(),
+              ValueListenableBuilder(
+                valueListenable: _valueNotifierStudent,
+                builder: (context, student, _) {
+                  if (student == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return GestureDetector(
+                    onTap: () {
+                      context.router.pushNamed('/profile');
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppColors.blueDark,
+                      child: _inconUser(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          header: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 45.w,
+                height: 45.w,
+                child: ValueListenableBuilder(
+                  valueListenable: _valueNotifierStudent,
+                  builder: (context, student, _) {
+                    if (student == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    return ValueListenableBuilder(
+                      valueListenable: position,
+                      builder: (context, score, _) {
+                        return GestureDetector(
+                          onDoubleTap: () {
+                            context.router.push(SimulacrumRoute(grado: grado!));
+                          },
+                          child: CirclesLevel(
+                            title: 'Tu posicion',
+                            puntaje: score.toString(),
+                          ),
+                        );
+                      },
+                    );
                   },
-                  child: CircleAvatar(
-                    backgroundColor: AppColors.blueDark,
-                    child: _inconUser(),
-                  ),
-                )
-              ],
-            ),
-            header: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 45.w,
-                  height: 45.w,
-                  child: ValueListenableBuilder(
-                      valueListenable: _valueNotifierStudent,
-                      builder: (context, student, _) {
-                        if (student == null) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        return ValueListenableBuilder(
-                            valueListenable: position,
-                            builder: (context, score, _) {
-                              return GestureDetector(
-                                onDoubleTap: () {
-                                  context.router
-                                      .push(SimulacrumRoute(grado: grado!));
-                                },
-                                child: CirclesLevel(
-                                  title: 'Tu posicion',
-                                  puntaje: score.toString(),
-                                  
-                                ),
-                              );
-                            });
-                      }),
                 ),
-              ],
-            ),
-            title: 'Entrenamiento',
-            needGrados: true,
-            changeGrade: (String v, String namelarge) async {
-              try {
-                loading.value = true;
-                grado = v;
-                final positionResult = await _studentService.getPosition(v);
-                final a = await asignaturas(v, namelarge);
-                _asignaturasValueNotifier.value = a;
-                loading.value = false;
-                position.value =
-                    positionResult["position"] ?? positionResult["posicion"];
-              } on Exception catch (e) {
-                // TODO
-              }
-              // setState(() {});
-            },
-            body: ValueListenableBuilder(
-                valueListenable: loading,
-                builder: (context, load, _) {
-                  return ValueListenableBuilder(
-                      valueListenable: _asignaturasValueNotifier,
-                      builder: (BuildContext context, value, _) {
-                        return !load
-                            ? ValueListenableBuilder(
-                                valueListenable: _valueNotifierStudent,
-                                builder: (context, student, _) {
-                                  if (student == null) {
-                                    return const SliverFillRemaining(
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    );
-                                  }
-                                  return SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                      (context, index) {
-                                        final e = value[index];
-                                        // Aquí construyes cada uno de tus ítems como antes
-                                        // Por ejemplo, usando un ValueListenableBuilder o simplemente listando tus widgets
-                                        Level? level;
-                                        final score = student
-                                            .getScoreAsiggnature(e.id!, grado!);
-                                        Color? colorLevel = student
-                                            .getCurrentColor(e.id!, grado!);
-                                        if (academy != null) {
-                                          final typeLevel =
-                                              academy!.compare(score!);
-                                          level = typeLevel!
-                                              .findLevelByPuntaje(score);
-                                          colorLevel = score == '0'
-                                              ? student.getCurrentColor(
-                                                  e.id!, grado!,
-                                                  currentColor: false)
-                                              : Color(int.parse(
-                                                  "0xff${typeLevel.color!}"));
-                                        }
-
-                                        return e.getRandomChildren().isNotEmpty
-                                            ? Subject(
-                                                text: e.value!,
-                                                tag: e.value!,
-                                                color: colorLevel,
-                                                previeColor: colorLevel,
-                                                animation: student
-                                                        .getAsignaturaDetails(
-                                                            e.id!, grado!) ??
-                                                    "nivel_0",
-                                                onClick: () {
-                                                  context.router.push(QuizRoute(
-                                                    asignatura: e.value,
-                                                    grado: grado,
-                                                    level: level!.level!,
-                                                    student: student,
-                                                    preguntasIds:
-                                                        e.getRandomChildren(),
-                                                  ));
-                                                },
-                                              )
-                                            : const SizedBox();
-                                      },
-                                      childCount:
-                                          value.length, // El número de ítems
-                                    ),
-                                  );
-                                })
-                            : const SliverFillRemaining(
+              ),
+            ],
+          ),
+          title: 'Entrenamiento',
+          needGrados: true,
+          changeGrade: (String v, String namelarge) async {
+            try {
+              loading.value = true;
+              grado = v;
+              final positionResult = await _studentService.getPosition(v);
+              final a = await asignaturas(v, namelarge);
+              _asignaturasValueNotifier.value = a;
+              loading.value = false;
+              position.value =
+                  positionResult["position"] ?? positionResult["posicion"];
+            } on Exception catch (e) {
+              // TODO
+            }
+            // setState(() {});
+          },
+          body: ValueListenableBuilder(
+            valueListenable: loading,
+            builder: (context, load, _) {
+              return ValueListenableBuilder(
+                valueListenable: _asignaturasValueNotifier,
+                builder: (BuildContext context, value, _) {
+                  return !load
+                      ? ValueListenableBuilder(
+                          valueListenable: _valueNotifierStudent,
+                          builder: (context, student, _) {
+                            if (student == null) {
+                              return const SliverFillRemaining(
                                 child: Center(
                                   child: CircularProgressIndicator(),
                                 ),
                               );
-                      });
-                })),
+                            }
+                            return SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final e = value[index];
+                                  // Aquí construyes cada uno de tus ítems como antes
+                                  // Por ejemplo, usando un ValueListenableBuilder o simplemente listando tus widgets
+                                  Level? level;
+                                  final score = student.getScoreAsiggnature(
+                                    e.id!,
+                                    grado!,
+                                  );
+                                  Color? colorLevel = student.getCurrentColor(
+                                    e.id!,
+                                    grado!,
+                                  );
+                                  if (academy != null) {
+                                    final typeLevel = academy!.compare(score!);
+                                    level = typeLevel!.findLevelByPuntaje(
+                                      score,
+                                    );
+                                    colorLevel = score == '0'
+                                        ? student.getCurrentColor(
+                                            e.id!,
+                                            grado!,
+                                            currentColor: false,
+                                          )
+                                        : Color(
+                                            int.parse(
+                                              "0xff${typeLevel.color!}",
+                                            ),
+                                          );
+                                  }
+
+                                  return e.getRandomChildren().isNotEmpty
+                                      ? Subject(
+                                          text: e.value!,
+                                          tag: e.value!,
+                                          color: colorLevel,
+                                          previeColor: colorLevel,
+                                          animation:
+                                              student.getAsignaturaDetails(
+                                                e.id!,
+                                                grado!,
+                                              ) ??
+                                              "nivel_0",
+                                          onClick: () {
+                                            context.router.push(
+                                              QuizRoute(
+                                                asignatura: e.value,
+                                                grado: grado,
+                                                level: level!.level!,
+                                                student: student,
+                                                preguntasIds: e
+                                                    .getRandomChildren(),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : const SizedBox();
+                                },
+                                childCount: value.length, // El número de ítems
+                              ),
+                            );
+                          },
+                        )
+                      : const SliverFillRemaining(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                },
+              );
+            },
+          ),
+        ),
       ],
     );
   }
@@ -426,28 +459,23 @@ class _HomeState extends State<Home> {
     String? photo;
     if (student != null) {
       photo = student!.photo;
-      setState(() {});
     }
 
     Widget item = Container(
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AppColors.linealGrdientGreen,
-          image: photo != null
-              ? DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(photo))
-              : null),
+        shape: BoxShape.circle,
+        gradient: AppColors.linealGrdientGreen,
+        image: photo != null
+            ? DecorationImage(fit: BoxFit.cover, image: NetworkImage(photo))
+            : null,
+      ),
       child: photo != null
           ? null
-          : const Icon(
-              Icons.person,
-              size: 30,
-              color: AppColors.white,
-            ),
+          : const Icon(Icons.person, size: 30, color: AppColors.white),
     );
 
     return item;
   }
 }
+
 // soy extraordinaria

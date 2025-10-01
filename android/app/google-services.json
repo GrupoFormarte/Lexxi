@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1091724479401",
+    "project_id": "app-formarte",
+    "storage_bucket": "app-formarte.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091724479401:android:e70425a83bc74affec52b8",
+        "android_client_info": {
+          "package_name": "com.pixelados.formarte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1091724479401-2buijbhcn3a7ot311cki0dtgoggmc3i6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcWyuar38T0gXeWyZX9NI5_NgDgcBgjRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1091724479401-2buijbhcn3a7ot311cki0dtgoggmc3i6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
