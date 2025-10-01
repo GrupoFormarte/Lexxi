@@ -129,7 +129,6 @@ class Student {
   String? getScoreAsiggnature(String asignaturaId, String gradoName) {
     String? score;
 
-    print(['getScoreAsiggnature', asignaturaId, gradoName]);
     for (Grado? grado in grados ?? []) {
       if (gradoName == grado!.grado) {
         for (Asignatura? asignatura in grado.asignaturas ?? []) {
@@ -254,8 +253,6 @@ class Grado {
   RankingResumen calcularRankingResumen({
     required int totalUsuarios,
   }) {
-    print(['isEmpty', historyPosition.isEmpty]);
-
     if (historyPosition.isEmpty) {
       return RankingResumen(
         posicionActual: 0,

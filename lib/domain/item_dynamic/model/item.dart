@@ -58,17 +58,22 @@ class Item {
   }
 
   List<String> getRandomChildren({int n = 10}) {
+
+    
     if (n >= childrents.length) {
       return List<String>.from(childrents);
     }
 
+
+
     Random random = Random();
     Set<String> randomChildren = {};
+
+   
 
     while (randomChildren.length < n) {
       randomChildren.add(childrents[random.nextInt(childrents.length)]);
     }
-
     return randomChildren.toList();
   }
 }

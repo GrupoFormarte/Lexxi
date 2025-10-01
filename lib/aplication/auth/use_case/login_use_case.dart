@@ -14,8 +14,6 @@ class LoginUseCase {
     try {
       return await _loginRepository.auth(login);
     } catch (e) {
-      print('Error de autenticación: $e');
-
       return null;
     }
   }

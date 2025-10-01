@@ -25,6 +25,12 @@ Este proyecto utiliza variables de entorno para gestionar configuraciones sensib
   - Producción: `https://api.formarte.co/api`
   - Desarrollo: `https://dev-mongo.plataformapodium.com/api`
 
+- `AUTH_BASE_URL`: URL base para autenticación
+  - Producción: `https://app.formarte.co`
+
+- `AUTH_SAF_URL`: URL SAF para autenticación
+  - Producción: `https://stage-api.plataformapodium.com/api`
+
 ### App Configuration
 
 - `APP_NAME`: Nombre de la aplicación (por defecto: "Lexxi")
@@ -50,6 +56,10 @@ import 'package:lexxi/config/env_config.dart';
 // URL base de la API
 String apiUrl = EnvConfig.baseUrl;
 String apiUrl2 = EnvConfig.baseUrl2;
+
+// URLs de autenticación
+String authUrl = EnvConfig.authBaseUrl;
+String authSafUrl = EnvConfig.authSafUrl;
 
 // Información de la app
 String appName = EnvConfig.appName;

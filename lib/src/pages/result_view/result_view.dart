@@ -118,7 +118,6 @@ class _ResultViewState extends State<ResultView>
   }
 
   void loadData() async {
-    print(['Grado_id', widget.idGrado]);
     final authService = getIt.get<AuthService>();
     final idGrado = context.read<GradoProvider>().idGrado;
     academicLevelModel.value = await academyLevels.getAcademicLevelById(

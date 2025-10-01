@@ -60,7 +60,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       try {
         await _audioPlayer.play(UrlSource(widget.audioData));
       } catch (e) {
-        print('Error decoding audio data: $e');
+        // Error al decodificar audio
       }
     }
   }

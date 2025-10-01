@@ -536,7 +536,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
           if (student != null) {
             student!.photo = imageUrl;
 
-            print(student!.toJson());
             await _studentService.update(student!);
           }
 

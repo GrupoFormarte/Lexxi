@@ -51,6 +51,7 @@ class UserImplement implements LoginRepository {
       ];
       await _localstorageShared.addToSharedPref(
           key: 'user', value: json.encode(userData));
+
       final user = User.fromJson(userData);
 
       return user;
@@ -103,6 +104,7 @@ class UserImplement implements LoginRepository {
   Future<bool> changePassword(String password, String newPassword) async {
     final userData = json
         .decode(await _localstorageShared.readFromSharedPref('user', String));
+          print(userData);
 
     final u = User.fromJson(userData);
     return _remoteDataSource.newPassword(password, newPassword, u.token!);

@@ -21,9 +21,8 @@ class LocalstorageShared {
       case const (List<String>):
         return await sharedPref.setStringList(key, value);
       default:
-        print("You cannot set other types to Shared Preferance");
+        return null;
     }
-    return null;
   }
 
   // Read From Shared Pref

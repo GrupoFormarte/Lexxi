@@ -66,7 +66,6 @@ class _MedallaAnimationState extends State<MedallaAnimation> {
                               artboard.forEachComponent(
                                 (child) {
                                   if (child is Shape) {
-                                    print([index, child.name]);
                                     if (child.name == "") {
                                       // final shape = child;
                                       // shape.fills.first.paint.color =
@@ -90,7 +89,6 @@ class _MedallaAnimationState extends State<MedallaAnimation> {
                               artboard.forEachComponent(
                                 (child) {
                                   if (child is Shape) {
-                                    print([index, child.name]);
                                     if (child.name == "") {
                                       // final shape = child;
                                       // shape.fills.first.paint.color =

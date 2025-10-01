@@ -131,7 +131,6 @@ class ItemImplement implements IItemRepository {
       }).toList();
     } catch (e) {
       // Manejo del error, puedes adaptarlo según tu estructura
-      print('Error al obtener items por IDs: $e');
       rethrow;
     }
   }

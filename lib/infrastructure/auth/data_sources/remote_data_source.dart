@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:lexxi/config/env_config.dart';
 import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:http/http.dart' as http;
@@ -9,18 +11,11 @@ import 'package:jwt_decode_full/jwt_decode_full.dart';
 
 @injectable
 class RemoteDataSource {
-  final String _baseUrl = 'https://app.formarte.co';
-  final String _userSaf = 'https://stage-api.plataformapodium.com/api';
-  // final String _userSaf = 'https://newdev.formarte.co/api';
-  // final String _baseUrl = 'http://192.168.1.62/api';
-  // final String _baseUrl = 'https://q1vcfcrh-8088.use2.devtunnels.ms/api';
+  // Las URLs ahora se obtienen desde las variables de entorno
+  String get _baseUrl => EnvConfig.authBaseUrl;
+  String get _urlSaf => EnvConfig.authSafUrl;
 
-  RemoteDataSource() {
-    if (kDebugMode) {
-      // _baseUrl = "https://apidev.formarte.co/api";
-      // _baseUrl = "https://3575-190-248-145-70.ngrok-free.app";
-    }
-  }
+  RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
     final Uri url = Uri.parse('$_baseUrl/users/register');
@@ -70,7 +65,7 @@ class RemoteDataSource {
       jwtData.payload['token'] = respon['data']['token'];
       respon['data']['user']['token'] = respon['data']['token'];
       final Map<String, dynamic> userData = respon['data']['user'];
-      // log(userData.toString());
+    
       return userData;
     } else {
       final dat = loginSaf(data);
@@ -79,7 +74,7 @@ class RemoteDataSource {
   }
 
   Future<Map<String, dynamic>?> loginSaf(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_userSaf/auth/login');
+    final Uri url = Uri.parse('$_urlSaf/auth/login');
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
@@ -98,7 +93,7 @@ class RemoteDataSource {
       if (data != null) {
         data['institute'] = jwtData.payload['institute'];
       }
-      print(data);
+        log(data.toString());
       return data;
     } else {
       final errorMessage = _getErrorMessage(response.statusCode,
@@ -115,11 +110,12 @@ class RemoteDataSource {
       "Content-Type": 'application/json'
     };
     final response = await http.get(
-      Uri.parse('$_userSaf/user/${data["id"]}'),
+      Uri.parse('$_urlSaf/user/${data["id"]}'),
       headers: headers,
     );
     final respon = jsonDecode(response.body);
     if (response.statusCode == 200) {
+      respon['token']=token;
       return respon;
     }
     return null;
@@ -142,14 +138,15 @@ class RemoteDataSource {
   Future<bool> newPassword(
       String password, String newPassword, String token) async {
     var headers = {
-      'Authorization': 'Bear $token',
+      'Authorization': 'Bearer $token',
       "Content-Type": 'application/json'
     };
-    final Uri url = Uri.parse('$_baseUrl/auth/change-password/');
+    final Uri url = Uri.parse('$_urlSaf/auth/change-password');
     var response = await http.post(url,
-        body: jsonEncode({"password": password, "newPassword": newPassword}),
+        body: jsonEncode({"current_password": password, "new_password": newPassword}),
         headers: headers);
-    // final respon = jsonDecode(response.body);
+
+
     try {
       if (response.statusCode == 200) {
         return true;

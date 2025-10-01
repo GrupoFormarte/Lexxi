@@ -301,7 +301,6 @@ class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       );
     }
-    print(isGradintGrey);
     return item;
   }
 

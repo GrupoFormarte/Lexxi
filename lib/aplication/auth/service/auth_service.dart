@@ -15,7 +15,6 @@ class AuthService {
     try {
       return await _loginRepository.auth(login);
     } catch (e) {
-      print(e);
       // throw UserException(e);
     }
     return null;

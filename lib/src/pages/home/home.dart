@@ -10,6 +10,7 @@ import 'package:lexxi/aplication/student/student_service.dart';
 import 'package:lexxi/domain/academic_level/model/academic_level.dart';
 import 'package:lexxi/domain/item_dynamic/model/item.dart';
 import 'package:lexxi/domain/student/model/student.dart';
+import 'package:lexxi/infrastructure/auth/data_sources/local_data_source/localstorage_shared.dart';
 import 'package:lexxi/injection.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
 import 'package:lexxi/src/global/widgets/body_custom.dart';
@@ -42,6 +43,7 @@ class _HomeState extends State<Home> {
   Student? student;
   final ValueNotifier<bool> loading = ValueNotifier(true);
   final academyUse = getIt.get<AcademicLevelUseCase>();
+  final LocalstorageShared _localstorageShared = LocalstorageShared();
 
   @override
   void initState() {
@@ -202,9 +204,6 @@ class _HomeState extends State<Home> {
         ids: childIds,
         grado: namelargeGrado,
       );
-      for (var i in asignaturas) {
-        print(i.toJson());
-      }
       if (asignaturas.isEmpty) {
         return [];
       }
@@ -267,18 +266,10 @@ class _HomeState extends State<Home> {
 
       if (diffA.isNotEmpty) {
         hayDiferencia = true;
-        print('👈 Childrents únicos en asignaturas[$i]: $diffA');
       }
 
       if (diffB.isNotEmpty) {
         hayDiferencia = true;
-        print('👉 Childrents únicos en asignaturasAux[$i]: $diffB');
-      }
-
-      if (!hayDiferencia) {
-        print(
-          '✅ asignaturas[$i] y asignaturasAux[$i] son completamente iguales',
-        );
       }
     }
   }
@@ -423,7 +414,17 @@ class _HomeState extends State<Home> {
                                                 grado!,
                                               ) ??
                                               "nivel_0",
-                                          onClick: () {
+                                          onClick: () async {
+                                            final numb =
+                                                await _localstorageShared
+                                                    .readFromSharedPref(
+                                                      'numbesQuestion',
+                                                      int,
+                                                    );
+
+                                            // Verificar que el widget siga montado antes de usar context
+                                            if (!context.mounted) return;
+
                                             context.router.push(
                                               QuizRoute(
                                                 asignatura: e.value,
@@ -431,7 +432,7 @@ class _HomeState extends State<Home> {
                                                 level: level!.level!,
                                                 student: student,
                                                 preguntasIds: e
-                                                    .getRandomChildren(),
+                                                    .getRandomChildren(n: numb),
                                               ),
                                             );
                                           },

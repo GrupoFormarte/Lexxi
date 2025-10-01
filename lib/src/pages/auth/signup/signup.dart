@@ -138,11 +138,6 @@ class _SignUpState extends State<SignUp> {
       logger.e("Error loading states: $e");
     }
 
-    // Debug print for verification
-    if (_selectedCity != null) {
-      print(_selectedCity!.toJson());
-    }
-
     // Uncomment for debug mode testing with sample data
     // if (kDebugMode) {
     //   _nameController.text = "Vane";
@@ -200,9 +195,6 @@ class _SignUpState extends State<SignUp> {
       final data = RegisterModel.fromJson(signUpData);
       try {
         await _authService!.register(data);
-        if (kDebugMode) {
-          print("Datos de registro: $signUpData");
-        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Registro exitoso")),
         );

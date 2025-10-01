@@ -45,7 +45,6 @@ class _VideoAlertDialogState extends State<VideoAlertDialog> {
 
       _videoController.addListener(() {
         if (_videoController.value.hasError) {
-          print('Error en el video: ${_videoController.value.errorDescription}');
           // Opcional: Puedes mostrar un mensaje de error al usuario aquí
         }
 
@@ -58,7 +57,6 @@ class _VideoAlertDialogState extends State<VideoAlertDialog> {
         }
       });
     } catch (e) {
-      print('Error al inicializar el video: $e');
       // Opcional: Muestra un diálogo de error o realiza otra acción
     }
   }

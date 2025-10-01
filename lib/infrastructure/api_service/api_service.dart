@@ -24,7 +24,6 @@ class ApiService {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      print('Failed to create document: ${response.body}');
       return null;
     }
   }
@@ -41,8 +40,6 @@ class ApiService {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      print(
-          'Failed to create document with ID: $baseUrl/$collectionName/$id - $data - ${response.body}');
       return null;
     }
   }
@@ -87,10 +84,6 @@ class ApiService {
     required Map<String, dynamic> data,
     required String nameCollection,
   }) async {
-
-    print([id,
-data,
-nameCollection]);
     final response = await http.put(
       Uri.parse('$baseUrl/$nameCollection/$id'),
       headers: {'Content-Type': 'application/json'},
@@ -114,7 +107,6 @@ nameCollection]);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      print('Failed to get documents by category: ${response.body}');
       return null;
     }
   }
@@ -122,15 +114,12 @@ nameCollection]);
   Future<List<dynamic>?> searchByField(
       String collectionName, String field, String value) async {
     try {
-      print('$baseUrl/$collectionName/search/$field/$value');
       final response = await http
           .get(Uri.parse('$baseUrl/$collectionName/search/$field/$value'));
 
       if ((response.statusCode == 200) || (response.statusCode == 200)) {
         return jsonDecode(response.body);
       } else {
-        print(
-            'Failed to search documents by field:$baseUrl/$collectionName/search/$field/$value = ${response.body}');
         return [];
       }
     } catch (e) {
@@ -182,7 +171,6 @@ nameCollection]);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      print('Failed to search documents by fields: ${response.body}');
       return null;
     }
   }

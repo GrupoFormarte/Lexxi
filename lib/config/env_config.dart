@@ -13,6 +13,12 @@ class EnvConfig {
   /// URL base secundaria de la API
   static String get baseUrl2 => dotenv.get('BASE_URL_2', fallback: 'https://api.formarte.co/api');
 
+  /// URL base para autenticación
+  static String get authBaseUrl => dotenv.get('AUTH_BASE_URL', fallback: 'https://app.formarte.co');
+
+  /// URL SAF para autenticación
+  static String get authSafUrl => dotenv.get('AUTH_SAF_URL', fallback: 'https://stage-api.plataformapodium.com/api');
+
   /// Nombre de la aplicación
   static String get appName => dotenv.get('APP_NAME', fallback: 'Lexxi');
 
@@ -37,6 +43,8 @@ class EnvConfig {
     print('Environment: $environment');
     print('Base URL: $baseUrl');
     print('Base URL 2: $baseUrl2');
+    print('Auth Base URL: $authBaseUrl');
+    print('Auth SAF URL: $authSafUrl');
     print('App Name: $appName');
     print('App Version: $appVersion');
     print('=================');

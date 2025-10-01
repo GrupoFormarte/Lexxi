@@ -11,7 +11,6 @@ class PreguntaService {
 
   Future<List<Question>?> getPreguntas(String grado,
       {String dificultad = 'facil',String tipoPregunta='grado'}) async {
-        print(grado);
     try {
       return await _preguntaRepository.getPreguntas('$tipoPregunta/$grado',
           dificultad: dificultad);
