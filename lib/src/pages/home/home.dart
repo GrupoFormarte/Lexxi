@@ -432,7 +432,7 @@ class _HomeState extends State<Home> {
                                                 level: level!.level!,
                                                 student: student,
                                                 preguntasIds: e
-                                                    .getRandomChildren(n: numb),
+                                                    .getRandomChildren(n: numb??10),
                                               ),
                                             );
                                           },

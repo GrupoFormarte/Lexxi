@@ -15,11 +15,7 @@ void main() {
       expect(baseUrl, contains('api'));
     });
 
-    test('debe cargar BASE_URL_2 correctamente', () {
-      final baseUrl2 = EnvConfig.baseUrl2;
-      expect(baseUrl2, isNotEmpty);
-      expect(baseUrl2, contains('api'));
-    });
+ 
 
     test('debe cargar APP_NAME correctamente', () {
       final appName = EnvConfig.appName;

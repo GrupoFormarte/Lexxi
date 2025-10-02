@@ -1,10 +1,49 @@
-# Formarte
+# Lexxi - Plataforma Educativa
 
 Aplicación educativa Flutter para quizzes interactivos y seguimiento de progreso académico.
 
 ## Descripción del Proyecto
 
-Formarte es una aplicación móvil desarrollada en Flutter que proporciona experiencias de aprendizaje interactivas mediante quizzes, contenido multimedia y seguimiento de progreso. La aplicación está construida siguiendo los principios de Clean Architecture con integración Firebase.
+Lexxi es una aplicación móvil desarrollada en Flutter que proporciona experiencias de aprendizaje interactivas mediante quizzes, contenido multimedia y seguimiento de progreso. La aplicación está construida siguiendo los principios de Clean Architecture con integración de servicios en la nube.
+
+## 🚀 Inicio Rápido
+
+### Configuración de Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+```env
+# API Principal
+API_BASE_URL=https://tu-api-principal.com/api
+
+# API Secundaria
+API_BASE_URL_2=https://tu-api-secundaria.com
+
+# URLs de Autenticación
+AUTH_BASE_URL=https://tu-auth.com
+AUTH_SAF_URL=https://tu-saf-auth.com
+```
+
+### Instalación
+
+```bash
+# 1. Instalar dependencias
+flutter pub get
+
+# 2. Generar código (inyección de dependencias y rutas)
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# 3. Ejecutar la aplicación
+flutter run
+```
+
+---
+
+## 📋 Endpoints de la API
+
+Para ver el listado completo de endpoints que usa la aplicación, consulta la documentación en la sección [Endpoints](#-endpoints-de-la-api-1) más abajo.
+
+---
 
 ## Arquitectura del Proyecto
 
@@ -1520,16 +1559,150 @@ flutter analyze                   # Ejecutar análisis estático
 - **Flutter TeX**: Renderizado de expresiones matemáticas
 - **Flutter HTML**: Renderizado de contenido HTML
 
+## 🔌 Endpoints de la API
+
+### Variables de Entorno Requeridas
+
+La aplicación utiliza las siguientes variables de entorno para configurar los endpoints:
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `API_BASE_URL` | URL base de la API principal | `https://api.example.com/api` |
+| `API_BASE_URL_2` | URL base de la API secundaria | `https://api2.example.com` |
+| `AUTH_BASE_URL` | URL base de autenticación principal | `https://auth.example.com` |
+| `AUTH_SAF_URL` | URL base de autenticación SAF | `https://saf-auth.example.com` |
+
+---
+
+### 🔐 Endpoints de Autenticación
+
+**Base URLs:** `AUTH_BASE_URL` y `AUTH_SAF_URL`
+
+| Método | Endpoint | Descripción | Parámetros |
+|--------|----------|-------------|------------|
+| POST | `/users/register` | Registro de usuario | `email`, `password`, `enroll` |
+| POST | `/users/login/` | Login principal | `email`, `password` |
+| POST | `/auth/login` | Login SAF (alternativo) | `email`, `password` |
+| GET | `/user/{id}` | Obtener datos de usuario | `id` (path param) |
+| GET | `/module/enrolls/student/{idS}` | Obtener matrículas | `idS` (path param) |
+| POST | `/auth/change-password` | Cambiar contraseña | `current_password`, `new_password` |
+| GET | `/user/profile/` | Obtener perfil | Header: `Authorization: Bearer {token}` |
+
+---
+
+### 📚 Endpoints API Principal
+
+**Base URL:** `API_BASE_URL`
+
+#### CRUD Genérico
+
+| Método | Endpoint | Descripción | Body/Params |
+|--------|----------|-------------|-------------|
+| POST | `/{collection}` | Crear documento | `{"data": {...}}` |
+| POST | `/{collection}/{id}` | Crear con ID específico | `{...}` |
+| GET | `/{collection}` | Obtener todos | - |
+| GET | `/{collection}/{id}` | Obtener por ID | - |
+| PUT | `/{collection}/{id}` | Actualizar | `{...}` |
+| DELETE | `/{collection}/{id}` | Eliminar | - |
+
+#### Búsquedas
+
+| Método | Endpoint | Descripción | Params |
+|--------|----------|-------------|--------|
+| GET | `/{collection}/category/{category}` | Buscar por categoría | `category` |
+| GET | `/{collection}/search/{field}/{value}` | Buscar por campo | `field`, `value` |
+| GET | `/{collection}/multi-search/{query}?fields={fields}` | Búsqueda multi-campo | `query`, `fields` (comma-separated) |
+
+---
+
+### 🎓 Endpoints por Módulo
+
+#### Estudiantes (`/Estudiantes`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/Estudiantes/{id}` | Crear estudiante |
+| POST | `/resultados_preguntas` | Guardar respuesta |
+| POST | `/contadores_preguntas/{id}` | Crear contador de respuestas |
+| POST | `/grado_dificultad/{id}` | Registrar dificultad de pregunta |
+| PUT | `/Estudiantes/{id}` | Actualizar estudiante |
+| GET | `/Estudiantes/convert_id/{id}` | Obtener info estudiante |
+| PUT | `/Estudiantes/{id}/config` | Actualizar configuración |
+| GET | `/get-my-position/{grado}/{id}` | Obtener posición en ranking |
+
+#### Preguntas (`/detail_preguntas`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/detail_preguntas` | Crear pregunta |
+| POST | `/detail_preguntas/{id}` | Crear con ID específico |
+| GET | `/detail_preguntas` | Listar todas las preguntas |
+| GET | `/detail_preguntas/{id}` | Obtener pregunta por ID |
+| PUT | `/detail_preguntas/{id}` | Actualizar pregunta |
+
+#### Items Dinámicos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/{collection}` | Crear item |
+| GET | `/generate-simulacro/{grado}/{cantidad}` | Generar simulacro |
+| POST | `/{collection}` | Búsqueda bulk por IDs (body: `{"ids": [...], "grado": "..."}`) |
+
+#### Niveles Académicos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/academic_levels/{id}` | Obtener nivel por ID |
+| GET | `/academic_levels/{id}/{score}` | Obtener nivel por puntaje |
+
+#### Promociones
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/promotion_alert` | Obtener promociones activas |
+
+---
+
+### 🌐 Endpoints API Secundaria
+
+**Base URL:** `API_BASE_URL_2`
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/module/programs/` | Obtener programas disponibles |
+| GET | `/{endPoint}` | Obtener estados y ciudades (endpoint dinámico) |
+
+---
+
+### 🖼️ Endpoints de Imágenes
+
+**Base URL:** `https://app.formarte.co/images` (hardcoded)
+
+| Método | Endpoint | Descripción | Content-Type |
+|--------|----------|-------------|--------------|
+| POST | `/upload` | Subir imagen (multipart) | `multipart/form-data` |
+| POST | `/upload` | Subir imagen (base64) | `application/json` (body: `{"image": "base64string"}`) |
+
+---
+
+### 📦 Colecciones Principales
+
+- `Estudiantes` - Datos de estudiantes
+- `resultados_preguntas` - Respuestas de estudiantes
+- `contadores_preguntas` - Contadores de respuestas correctas/incorrectas
+- `grado_dificultad` - Nivel de dificultad de preguntas
+- `detail_preguntas` - Detalles de preguntas
+- `academic_levels` - Niveles académicos
+- `promotion_alert` - Alertas de promociones
+
+---
+
 ## Configuración y Setup
 
-### Integración Firebase
-- ID del Proyecto: app-formarte (1091724479401)
-- Servicios: Firestore, Firebase Messaging, Authentication
+### Integración de Servicios
 - Zona Horaria: America/Bogota
-
-### Endpoints API
-- Desarrollo: `https://dev-mongo.plataformapodium.com/api`
-- Producción: `https://api.formarte.co/api`
+- Manejo de imágenes: Multipart y Base64
+- Autenticación: JWT Bearer Tokens
 
 ## Patrones de Desarrollo Comunes
 
