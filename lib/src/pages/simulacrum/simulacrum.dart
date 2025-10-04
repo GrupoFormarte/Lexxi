@@ -20,7 +20,6 @@ import 'package:rive/rive.dart';
 import 'package:sizer/sizer.dart';
 
 @RoutePage() // Add this annotation to your routable pages
-
 class Simulacrum extends StatefulWidget {
   final String grado;
   const Simulacrum({super.key, required this.grado});
@@ -41,8 +40,9 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
   final StudentService _studentService = getIt.get<StudentService>();
   Student? student;
   ValueNotifier<Grado?> historyGrado = ValueNotifier(null);
-  ValueNotifier<Map<String, dynamic>> positionToStudentCount =
-      ValueNotifier({});
+  ValueNotifier<Map<String, dynamic>> positionToStudentCount = ValueNotifier(
+    {},
+  );
   @override
   void initState() {
     // _controller.
@@ -64,11 +64,11 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
   loadData() async {
     student = await _studentService.getInfo();
 
-  
     historyGrado.value = student?.grados!.first;
     final allItems = await itemUseCase.getAllItems(collection: "Grados");
-    final filtered =
-        allItems.where((item) => item.childrents.isNotEmpty).toList();
+    final filtered = allItems
+        .where((item) => item.childrents.isNotEmpty)
+        .toList();
     grados.value = filtered;
     final g = student?.grados!.first.grado;
     positionToStudentCount.value = await _studentService.getPosition(g!);
@@ -77,72 +77,70 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: historyGrado,
-        builder: (context, historysData, _) {
-          return CustomBody(
-              expandedHeight: 15.h,
-              appBar: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BackButton(),
-                  Logo(),
-                ],
-              ),
-              header: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (historysData != null)
-                    bestWorstTimesCard(historysData.obtenerMejorYPeorTiempo()),
-                ],
-              ),
-              onhasScrolled: (bool hasScrolled) {
-                // print(hasScrolled);
-              },
-              title: 'Entrenamientos',
-              body: SliverList(
-                delegate: SliverChildListDelegate([
-                    SizedBox(
-                      // height: 500,
-                      child: Column(
-                        children: [
-                          Column(
-                            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ValueListenableBuilder(
-                                  valueListenable: grados,
-                                  builder: (context, value, child) {
-                                    return _gradesProgram(value);
-                                  }),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                              if (historysData != null) ...[
-                                ValueListenableBuilder(
-                                    valueListenable: positionToStudentCount,
-                                    builder: (context, data, _) {
-                                      if (data.isEmpty) {
-                                        return const SizedBox();
-                                      }
-                                      return rankingCard(
-                                          historysData.calcularRankingResumen(
-                                              totalUsuarios:
-                                                  data['n_estudiantes']));
-                                    }),
-                                trainingProgressCard(
-                                    historysData.obtenerResumenUltimaSesion()),
-                              ],
-                              SizedBox(
-                                width: 100.w,
-                                height: 70,
-                              )
-                            ],
+      valueListenable: historyGrado,
+      builder: (context, historysData, _) {
+        return CustomBody(
+          expandedHeight: 15.h,
+          appBar: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [BackButton(), Logo()],
+          ),
+          header: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (historysData != null)
+                bestWorstTimesCard(historysData.obtenerMejorYPeorTiempo()),
+            ],
+          ),
+          onhasScrolled: (bool hasScrolled) {
+            // print(hasScrolled);
+          },
+          title: 'Entrenamientos',
+          body: SliverList(
+            delegate: SliverChildListDelegate([
+              SizedBox(
+                // height: 500,
+                child: Column(
+                  children: [
+                    Column(
+                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ValueListenableBuilder(
+                          valueListenable: grados,
+                          builder: (context, value, child) {
+                            return _gradesProgram(value);
+                          },
+                        ),
+                        const SizedBox(height: 50),
+                        if (historysData != null) ...[
+                          ValueListenableBuilder(
+                            valueListenable: positionToStudentCount,
+                            builder: (context, data, _) {
+                              if (data.isEmpty) {
+                                return const SizedBox();
+                              }
+                              return rankingCard(
+                                historysData.calcularRankingResumen(
+                                  totalUsuarios: data['n_estudiantes'],
+                                ),
+                              );
+                            },
+                          ),
+                          trainingProgressCard(
+                            historysData.obtenerResumenUltimaSesion(),
                           ),
                         ],
-                      ),
+                        SizedBox(width: 100.w, height: 70),
+                      ],
                     ),
-                ]),
-              ));
-        });
+                  ],
+                ),
+              ),
+            ]),
+          ),
+        );
+      },
+    );
   }
 
   Widget _gradesProgram(List<Item> items) {
@@ -152,36 +150,36 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
       width: 100.w,
       height: 400,
       child: PageView.builder(
-          controller: controller,
-          itemCount: items.length, // Aquí puedes reemplazar por tu lista real
-          itemBuilder: (context, index) {
-            return InkWell(
-                onTap: () {
-                  showTrainingModeDialog(grado: items[index]);
-               
-                },
-              child: AnimatedBuilder(
-                animation: controller,
-                builder: (context, child) {
-                  double value = 1.0;
-                  if (controller.position.haveDimensions) {
-                    value = controller.page! - index;
-                    value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
-                  }
-                  return Center(
-                    child: Transform.scale(
-                      scale: Curves.easeOut.transform(value),
-                      child: child,
-                    ),
-                  );
-                },
-                child: _gradeCard(items[index]), // el contenido visual
-              ),
-            );
-          },
-          onPageChanged: (index) {
-            getGrado(items[index]);
-          }),
+        controller: controller,
+        itemCount: items.length, // Aquí puedes reemplazar por tu lista real
+        itemBuilder: (context, index) {
+          return InkWell(
+            onTap: () {
+              showTrainingModeDialog(grado: items[index]);
+            },
+            child: AnimatedBuilder(
+              animation: controller,
+              builder: (context, child) {
+                double value = 1.0;
+                if (controller.position.haveDimensions) {
+                  value = controller.page! - index;
+                  value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+                }
+                return Center(
+                  child: Transform.scale(
+                    scale: Curves.easeOut.transform(value),
+                    child: child,
+                  ),
+                );
+              },
+              child: _gradeCard(items[index]), // el contenido visual
+            ),
+          );
+        },
+        onPageChanged: (index) {
+          getGrado(items[index]);
+        },
+      ),
     );
   }
 
@@ -189,8 +187,8 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
     final arrowIcon = calcularRankingResumen.tendencia == 'Igual'
         ? Icons.arrow_forward
         : (calcularRankingResumen.tendencia == 'Bajó'
-            ? Icons.arrow_downward
-            : Icons.arrow_upward);
+              ? Icons.arrow_downward
+              : Icons.arrow_upward);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -210,17 +208,19 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
               const Text(
                 "# Tu posición en el ranking:",
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 "${calcularRankingResumen.posicionActual} de ${calcularRankingResumen.totalUsuarios}",
                 style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: ColorPalette.secondary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: ColorPalette.secondary,
+                ),
               ),
               const SizedBox(height: 4),
               Row(
@@ -249,15 +249,20 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
           children: [
             Icon(Icons.fiber_manual_record, size: 8, color: Colors.tealAccent),
             SizedBox(width: 6),
-            Text("Modo: Tiempo (Difícil)",
-                style: TextStyle(color: Colors.white)),
+            Text(
+              "Modo: Tiempo (Difícil)",
+              style: TextStyle(color: Colors.white),
+            ),
           ],
         ),
         SizedBox(height: 8),
         Row(
           children: [
-            Icon(Icons.bubble_chart_outlined,
-                size: 18, color: Colors.tealAccent),
+            Icon(
+              Icons.bubble_chart_outlined,
+              size: 18,
+              color: Colors.tealAccent,
+            ),
             SizedBox(width: 6),
             Text("Preguntas: 20", style: TextStyle(color: Colors.white)),
           ],
@@ -357,38 +362,28 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
           // Tarjeta de estado
           Positioned(
             // bottom: -20,
-            child:  Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 15.w, 
-                 
-                  ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 1.w, 
-                    vertical: 1.2.h
-                  ),
-                  constraints: BoxConstraints(
-                    minWidth: 60.w,
-                    maxWidth: 80.w,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 2, color: ColorPalette.secondary),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    "Iniciar Entrenamiento ${grado.shortName}",
-                    textAlign: TextAlign.center,
-                    // maxLines:2,
-                    style: TextStyle(
-                      color: ColorPalette.white,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
+                constraints: BoxConstraints(minWidth: 60.w, maxWidth: 80.w),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: ColorPalette.secondary),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "Iniciar Entrenamiento ${grado.shortName}",
+                  textAlign: TextAlign.center,
+                  // maxLines:2,
+                  style: TextStyle(
+                    color: ColorPalette.white,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ),
-          
+          ),
 
           Positioned(
             top: 20,
@@ -396,41 +391,46 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
               width: 70,
               height: 70,
               child: GestureDetector(
-                  onTap: () {
-                    // context.router.push(QuizRoute(grado: widget.grado));
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                            image: AssetImage('assets/logo_lexxi.png'),
-                            fit: BoxFit.contain,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black
-                                  .withOpacity(0.3), // sombra semi-transparente
-                              blurRadius: 10, // qué tan difusa es la sombra
-                              spreadRadius: 2, // qué tanto se expande
-                              offset: const Offset(
-                                  0, 4), // posición de la sombra (x, y)
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(
-                              8), // opcional: esquinas redondeadas
+                onTap: () {
+                  // context.router.push(QuizRoute(grado: widget.grado));
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          image: AssetImage('assets/logo_lexxi.png'),
+                          fit: BoxFit.contain,
                         ),
-                      )
-                      // CustomPaint(
-                      //   size: const Size(120, 120),
-                      //   painter: PentagonPainter(color: AppColors.blueDark),
-                      // ),
-                      // MedalGradient(controller: [_controller]),
-                      // _alert()
-                    ],
-                  )),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(
+                              0.3,
+                            ), // sombra semi-transparente
+                            blurRadius: 10, // qué tan difusa es la sombra
+                            spreadRadius: 2, // qué tanto se expande
+                            offset: const Offset(
+                              0,
+                              4,
+                            ), // posición de la sombra (x, y)
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ), // opcional: esquinas redondeadas
+                      ),
+                    ),
+                    // CustomPaint(
+                    //   size: const Size(120, 120),
+                    //   painter: PentagonPainter(color: AppColors.blueDark),
+                    // ),
+                    // MedalGradient(controller: [_controller]),
+                    // _alert()
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -465,12 +465,14 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 12),
               Text(
-                  'Última sesión: ${obtenerResumenUltimaSesion.preguntas} preguntas',
-                  style: const TextStyle(color: Colors.white)),
-              Text('Duración: ${obtenerResumenUltimaSesion.duracion} min',
-                  style: const TextStyle(color: Colors.white)),
-              Text('Resultado: ${obtenerResumenUltimaSesion.resultado}',
-                  style: const TextStyle(color: Colors.white)),
+                'Última sesión: ${obtenerResumenUltimaSesion.preguntas} preguntas',
+                style: const TextStyle(color: Colors.white),
+              ),
+
+              Text(
+                'Resultado: ${obtenerResumenUltimaSesion.resultado}',
+                style: const TextStyle(color: Colors.white),
+              ),
               const SizedBox(height: 16),
               // ElevatedButton(
               //   style: ElevatedButton.styleFrom(
@@ -564,7 +566,9 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
                                   Text(
                                     "Puedes elegir el número de preguntas que deseas responder por área manejando tu tiempo.",
                                     style: TextStyle(
-                                        fontSize: 12, color: Colors.white70),
+                                      fontSize: 12,
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -617,7 +621,9 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
                                   Text(
                                     "Tienes un tiempo limitado para responder cada  pregunta.",
                                     style: TextStyle(
-                                        fontSize: 12, color: Colors.white70),
+                                      fontSize: 12,
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -688,12 +694,16 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                     child: Text(
                       "$count",
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   );
                 }).toList(),
@@ -701,8 +711,10 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancelar",
-                    style: TextStyle(color: Colors.white70)),
+                child: const Text(
+                  "Cancelar",
+                  style: TextStyle(color: Colors.white70),
+                ),
               ),
             ],
           ),
@@ -743,7 +755,11 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
   }
 
   Widget _buttonContent(
-      IconData icon, String title, String subtitle, Color color) {
+    IconData icon,
+    String title,
+    String subtitle,
+    Color color,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -753,12 +769,19 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 15, color: color)),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: color,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.white70)),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 12, color: Colors.white70),
+              ),
             ],
           ),
         ),
@@ -772,8 +795,9 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
     for (var g in student!.grados!) {
       if (g.idGrado == grado.id) {
         // _grado = g;
-        positionToStudentCount.value =
-            await _studentService.getPosition(g.grado!);
+        positionToStudentCount.value = await _studentService.getPosition(
+          g.grado!,
+        );
 
         historyGrado.value = g;
 
@@ -799,22 +823,20 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
                   width: 250,
                   height: 250,
                   child: ValueListenableBuilder(
-                      valueListenable: positionToStudentCount,
-                      builder: (context, pTs, _) {
-                        return CirclesLevel(
-                          title: 'Tu posición',
-                          puntaje: "${pTs['posicion'] ?? 0}",
-                        );
-                      }),
+                    valueListenable: positionToStudentCount,
+                    builder: (context, pTs, _) {
+                      return CirclesLevel(
+                        title: 'Tu posición',
+                        puntaje: "${pTs['posicion'] ?? 0}",
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        Positioned(
-          bottom: -50,
-          child: inProgressStatus(grado),
-        )
+        Positioned(bottom: -50, child: inProgressStatus(grado)),
       ],
     );
   }
@@ -830,9 +852,7 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
               margin: const EdgeInsets.only(top: 10),
               child: Transform.scale(
                 scale: _animationDialog.value,
-                child: const StyleArrow(
-                  title: 'Toca el medallón para iniciar',
-                ),
+                child: const StyleArrow(title: 'Toca el medallón para iniciar'),
               ),
             ),
           ),

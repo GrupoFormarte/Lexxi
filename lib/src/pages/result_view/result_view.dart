@@ -435,28 +435,29 @@ class _ResultViewState extends State<ResultView>
                                         .copyWith(color: AppColors.blueDark),
                                   ),
                                   onPressed: () {
-                                    if (student != null) {
-                                      context.router.pushNamed('/');
-                                      return;
-                                    }
+                                    context.router.pushNamed('/');
+                                    // if (student != null) {
+                                    //   context.router.pushNamed('/');
+                                    //   return;
+                                    // }
                                     // showVideoAlert(
                                     //     "assets/videos/Calendario-B2025_1.mp4",
-                                    //     () {});
+                                   
 
-                                    showPromotionDialog(
-                                      context,
-                                      promotion: _promotion,
-                                      onClik: () {
-                                        final message =
-                                            '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
-                                            'Detalles: ${_promotion.description}';
-                                        launchWhatsAppUri(
-                                          '+573183491375',
-                                          message,
-                                        );
-                                        context.router.pushNamed('/');
-                                      },
-                                    );
+                                    // showPromotionDialog(
+                                    //   context,
+                                    //   promotion: _promotion,
+                                    //   onClik: () {
+                                    //     final message =
+                                    //         '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
+                                    //         'Detalles: ${_promotion.description}';
+                                    //     launchWhatsAppUri(
+                                    //       '+573183491375',
+                                    //       message,
+                                    //     );
+                                   //         context.router.pushNamed('/');  () {});
+                                    //   },
+                                    // );
                                   },
                                 ),
                               ),
