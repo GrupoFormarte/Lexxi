@@ -49,7 +49,7 @@ class _SelectionProgramState extends State<SelectionProgram> {
 
   Future<void> loadData() async {
     try {
-      final items = await itemUseCase.getAllItems(collection: "Grados");
+      final items = await itemUseCase.getAllItems(collection: "system/Grados");
       // items.shuffle(); // Reorganizar la lista en orden aleatorio
       preuniversitarios.value = organizeItemsByCharacterCount(items);
       _valueNotifierAcademy.value =

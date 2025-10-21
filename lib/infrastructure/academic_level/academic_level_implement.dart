@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: AcademicLevelRepository)
 class AcademicLevelRepositoryImpl implements AcademicLevelRepository {
   final ApiService dbCrud;
-  final String collectionName = 'academic_levels';
+  final String collectionName = 'system/academic_levels';
 
   AcademicLevelRepositoryImpl(this.dbCrud);
 

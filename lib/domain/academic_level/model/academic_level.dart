@@ -24,7 +24,7 @@ class AcademicLevelModel {
   factory AcademicLevelModel.fromJson(Map<String, dynamic> json) =>
       AcademicLevelModel(
         idGrado: json["id_grado"],
-        levelMax: json["levelMax"],
+        levelMax: "${json["levelMax"]}",
         typesLevels: json["types_levels"] == null
             ? []
             : List<TypeLevel>.from(
@@ -89,8 +89,8 @@ class TypeLevel {
   factory TypeLevel.fromJson(Map<String, dynamic> json) => TypeLevel(
         name: json["name"],
         color: json["color"],
-        min: json["min"],
-        max: json["max"],
+        min: "${json["min"]}",
+        max: "${json["max"]}",
         levels: json["levels"] == null
             ? []
             : List<Level>.from(json["levels"].map((x) => Level.fromJson(x))),

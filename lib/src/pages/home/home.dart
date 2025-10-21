@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
         _showError('No se encontraron grados para el usuario.');
         return;
       }
-      final listGrado = await item.getAllItems(collection: "Grados");
+      final listGrado = await item.getAllItems(collection: "system/Grados");
       student = await _studentService.getInfo();
       List<Grado> grados = [];
       if (student != null) {
@@ -151,6 +151,7 @@ class _HomeState extends State<Home> {
 
       _valueNotifierStudent.value = student;
     } catch (e, stackTrace) {
+      print(e.toString());
       _showError('Ocurrió un error al cargar los datos del usuario.');
     }
   }
@@ -188,19 +189,19 @@ class _HomeState extends State<Home> {
   Future<List<Item>> asignaturas(String grado, String namelargeGrado) async {
     try {
       final gradoData = await item.searchByField(
-        collection: "Grados",
+        collection: "system/Grados",
         field: 'code',
         value: grado,
       );
-
+      print(gradoData.length);
       if (gradoData.isEmpty) {
         return [];
       }
 
       final childIds = gradoData.first.childrents;
-
+      print(["---", childIds.length]);
       final asignaturas = await item.getItemsByIdsBulk(
-        collection: "get-areas/bulk",
+        collection: "academic/get-areas/bulk",
         ids: childIds,
         grado: namelargeGrado,
       );
@@ -386,9 +387,12 @@ class _HomeState extends State<Home> {
                                   );
                                   if (academy != null) {
                                     final typeLevel = academy!.compare(score!);
+                           
                                     level = typeLevel!.findLevelByPuntaje(
                                       score,
                                     );
+
+                                             print(["typeLevel---",level!.toJson()]);
                                     colorLevel = score == '0'
                                         ? student.getCurrentColor(
                                             e.id!,
@@ -401,7 +405,7 @@ class _HomeState extends State<Home> {
                                             ),
                                           );
                                   }
-
+                                 
                                   return e.getRandomChildren().isNotEmpty
                                       ? Subject(
                                           text: e.value!,
@@ -409,11 +413,8 @@ class _HomeState extends State<Home> {
                                           color: colorLevel,
                                           previeColor: colorLevel,
                                           animation:
-                                              student.getAsignaturaDetails(
-                                                e.id!,
-                                                grado!,
-                                              ) ??
-                                              "nivel_0",
+                                              level==null?
+                                              "nivel_0": level.level!,
                                           onClick: () async {
                                             final numb =
                                                 await _localstorageShared
@@ -432,7 +433,9 @@ class _HomeState extends State<Home> {
                                                 level: level!.level!,
                                                 student: student,
                                                 preguntasIds: e
-                                                    .getRandomChildren(n: numb??10),
+                                                    .getRandomChildren(
+                                                      n: numb ?? 10,
+                                                    ),
                                               ),
                                             );
                                           },

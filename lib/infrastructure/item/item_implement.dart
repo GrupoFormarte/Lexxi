@@ -95,7 +95,7 @@ class ItemImplement implements IItemRepository {
     return data.map((e) {
       Item item = Item();
       item.id = "${e['id']}";
-      item.codeDep = e['code_dep'];
+      item.codeDep = "${e['id']}";
       item.name = e['name'];
 
       return item;
@@ -139,8 +139,8 @@ class ItemImplement implements IItemRepository {
   Future<List<String>> getSimulacro(
       {required String grado, int cantidad = 2}) async {
     final data = await apiService.getById(
-        collectionName: "generate-simulacro", id: "$grado/$cantidad");
-
+        collectionName: "academic/generate-simulacro", id: "$grado/$cantidad");
+print(data);
     List<String> lista = [];
     for (var element in data!['data']) {
       lista.add(element);

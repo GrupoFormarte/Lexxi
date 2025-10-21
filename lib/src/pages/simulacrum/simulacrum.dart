@@ -65,7 +65,7 @@ class _SimulacrumState extends State<Simulacrum> with TickerProviderStateMixin {
     student = await _studentService.getInfo();
 
     historyGrado.value = student?.grados!.first;
-    final allItems = await itemUseCase.getAllItems(collection: "Grados");
+    final allItems = await itemUseCase.getAllItems(collection: "system/Grados");
     final filtered = allItems
         .where((item) => item.childrents.isNotEmpty)
         .toList();

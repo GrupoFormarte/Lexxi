@@ -34,7 +34,7 @@ void main() {
         }
       ];
 
-      when(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      when(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .thenAnswer((_) async => promotionData);
 
       // Act
@@ -44,7 +44,7 @@ void main() {
       expect(result, isNotNull);
       expect(result.id, 'promo1');
       expect(result.title, 'Promoción Activa');
-      verify(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      verify(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .called(1);
     });
 
@@ -65,7 +65,7 @@ void main() {
         }
       ];
 
-      when(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      when(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .thenAnswer((_) async => promotionData);
 
       // Act
@@ -75,14 +75,14 @@ void main() {
       expect(result, isNotNull);
       expect(result.id, 'default');
       expect(result.title, '¡No hay promociones activas!');
-      verify(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      verify(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .called(1);
     });
 
     test('get debe retornar promoción por defecto cuando lista vacía',
         () async {
       // Arrange
-      when(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      when(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .thenAnswer((_) async => []);
 
       // Act
@@ -91,7 +91,7 @@ void main() {
       // Assert
       expect(result, isNotNull);
       expect(result.id, 'default');
-      verify(mockApiService.getAll(nameCollection: 'promotion_alert'))
+      verify(mockApiService.getAll(nameCollection: 'system/promotion_alert'))
           .called(1);
     });
   });

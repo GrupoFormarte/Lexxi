@@ -20,11 +20,11 @@ class DetailPreguntasUseCase {
     for (var i in d) {
       ComponenteEducativo pregunta =
           await respuestasComponete.obtenerComponenteEducativoPorId(
-              id: i.pregunta!, collection: "Preguntas");
+              id: i.pregunta!, collection: "system/Preguntas");
       i.respuestasComponete = [];
       for (var j in i.respuestas) {
         final respuesta = await respuestasComponete
-            .obtenerComponenteEducativoPorId(id: j, collection: "Respuestas");
+            .obtenerComponenteEducativoPorId(id: j, collection: "system/Respuestas");
 
         i.respuestasComponete.add(respuesta);
       }
@@ -41,12 +41,12 @@ class DetailPreguntasUseCase {
     DetallePregunta detailPregunta = d;
     ComponenteEducativo pregunta =
         await respuestasComponete.obtenerComponenteEducativoPorId(
-            id: d.pregunta!, collection: "Preguntas");
+            id: d.pregunta!, collection: "system/Preguntas");
     detailPregunta.preguntaComponent = pregunta;
     List<ComponenteEducativo> respuestas = [];
     for (var i in d.respuestas) {
       final respuesta = await respuestasComponete
-          .obtenerComponenteEducativoPorId(id: i, collection: "Respuestas");
+          .obtenerComponenteEducativoPorId(id: i, collection: "system/Respuestas");
       respuestas.add(respuesta);
     }
     detailPregunta.respuestasComponete = respuestas;

@@ -10,11 +10,11 @@ import 'package:injectable/injectable.dart';
 class StudentImplement implements StudentsRepositorie {
   final ApiService dbCrud;
 
-  String nameCollection = "Estudiantes";
-  //  String answersCollection = "Respuestas";
-  String answersCollection = "resultados_preguntas";
-  String difficultyCollection = "grado_dificultad";
-  String countersCollection = "contadores_preguntas";
+  String nameCollection = "students/Estudiantes";
+  //  String answersCollection = "system/Respuestas";
+  String answersCollection = "system/resultados_preguntas";
+  String difficultyCollection = "system/grado_dificultad";
+  String countersCollection = "system/resultados_preguntas";
 
   StudentImplement(this.dbCrud);
 
@@ -152,7 +152,7 @@ class StudentImplement implements StudentsRepositorie {
   Future<Map<String, dynamic>> getPosition(String id, String grado) async {
     try {
       final position = await dbCrud.getById(
-        collectionName: "get-my-position/$grado",
+        collectionName: "students/get-my-position/$grado",
         id: id,
       );
       if (position == null) {

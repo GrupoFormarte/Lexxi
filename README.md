@@ -1617,18 +1617,18 @@ La aplicación utiliza las siguientes variables de entorno para configurar los e
 
 ### 🎓 Endpoints por Módulo
 
-#### Estudiantes (`/Estudiantes`)
+#### students/Estudiantes (`/students/Estudiantes`)
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | `/Estudiantes/{id}` | Crear estudiante |
+| POST | `/students/Estudiantes/{id}` | Crear estudiante |
 | POST | `/resultados_preguntas` | Guardar respuesta |
 | POST | `/contadores_preguntas/{id}` | Crear contador de respuestas |
 | POST | `/grado_dificultad/{id}` | Registrar dificultad de pregunta |
-| PUT | `/Estudiantes/{id}` | Actualizar estudiante |
-| GET | `/Estudiantes/convert_id/{id}` | Obtener info estudiante |
-| PUT | `/Estudiantes/{id}/config` | Actualizar configuración |
-| GET | `/get-my-position/{grado}/{id}` | Obtener posición en ranking |
+| PUT | `/students/Estudiantes/{id}` | Actualizar estudiante |
+| GET | `/students/Estudiantes/convert_id/{id}` | Obtener info estudiante |
+| PUT | `/students/Estudiantes/{id}/config` | Actualizar configuración |
+| GET | `/'students/get-my-position/{grado}/{id}` | Obtener posición en ranking |
 
 #### Preguntas (`/detail_preguntas`)
 
@@ -1659,7 +1659,7 @@ La aplicación utiliza las siguientes variables de entorno para configurar los e
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/promotion_alert` | Obtener promociones activas |
+| GET | `/system/promotion_alert` | Obtener promociones activas |
 
 ---
 
@@ -1687,13 +1687,13 @@ La aplicación utiliza las siguientes variables de entorno para configurar los e
 
 ### 📦 Colecciones Principales
 
-- `Estudiantes` - Datos de estudiantes
+- `students/Estudiantes` - Datos de estudiantes
 - `resultados_preguntas` - Respuestas de estudiantes
 - `contadores_preguntas` - Contadores de respuestas correctas/incorrectas
 - `grado_dificultad` - Nivel de dificultad de preguntas
 - `detail_preguntas` - Detalles de preguntas
 - `academic_levels` - Niveles académicos
-- `promotion_alert` - Alertas de promociones
+- `system/promotion_alert` - Alertas de promociones
 
 ---
 

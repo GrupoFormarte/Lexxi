@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 class LevelImplement implements LevelRepository {
   final ApiService apiService;
 
-  final _colecction = "academic_levels";
+  final _colecction = "system/academic_levels";
   LevelImplement(this.apiService);
 
   @override

@@ -29,7 +29,7 @@ void main() {
       };
 
       when(mockApiService.getById(
-              collectionName: 'academic_levels', id: '$id/$score'))
+              collectionName: 'system/academic_levels', id: '$id/$score'))
           .thenAnswer((_) async => levelData);
 
       // Act
@@ -40,7 +40,7 @@ void main() {
       expect(result!.level, 'Nivel 1');
       expect(result.currentColor, '#FF0000');
       verify(mockApiService.getById(
-              collectionName: 'academic_levels', id: '$id/$score'))
+              collectionName: 'system/academic_levels', id: '$id/$score'))
           .called(1);
     });
 
@@ -50,7 +50,7 @@ void main() {
       const score = '0';
 
       when(mockApiService.getById(
-              collectionName: 'academic_levels', id: '$id/$score'))
+              collectionName: 'system/academic_levels', id: '$id/$score'))
           .thenAnswer((_) async => null);
 
       // Act
@@ -59,7 +59,7 @@ void main() {
       // Assert
       expect(result, isNull);
       verify(mockApiService.getById(
-              collectionName: 'academic_levels', id: '$id/$score'))
+              collectionName: 'system/academic_levels', id: '$id/$score'))
           .called(1);
     });
   });

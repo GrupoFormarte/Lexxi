@@ -16,15 +16,12 @@ import 'package:lexxi/domain/student/model/student.dart';
 import 'package:lexxi/injection.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
 import 'package:lexxi/src/global/extensions/build_context_ext.dart';
-import 'package:lexxi/src/global/widgets/circles_level.dart';
 import 'package:lexxi/src/global/widgets/gradient_rect_slider_track_shape.dart';
 import 'package:lexxi/src/global/widgets/medalla_rive.dart';
-import 'package:lexxi/src/global/widgets/promotion_dialog.dart';
 import 'package:lexxi/src/global/widgets/video_alert_dialog.dart';
 import 'package:lexxi/src/providers/data_user_provider.dart';
 import 'package:lexxi/src/providers/grado_provider.dart';
 import 'package:lexxi/src/providers/resumen_quiz_provider.dart';
-import 'package:lexxi/utils/whatsapp.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:sizer/sizer.dart';
@@ -178,7 +175,6 @@ class _ResultViewState extends State<ResultView>
             ),
           );
         }
-
         for (var i = 0; i < student!.grados!.length; i++) {
           final g = student!.grados![i];
           if (gradoSelected.idGrado == g.idGrado) {
@@ -188,6 +184,8 @@ class _ResultViewState extends State<ResultView>
         }
       }
 
+
+// print([student!.toJson()]);
       _studentService.update(student!);
     }
     setState(() {});
@@ -195,10 +193,19 @@ class _ResultViewState extends State<ResultView>
 
   @override
   void dispose() {
-    _controller!.dispose();
-    _controllerCenter.dispose();
-    _timer.cancel(); // Cancelar el Timer
-    super.dispose();
+    // Primero detén las animaciones
+
+  _controllerCenter.stop();
+
+  // Luego cancela timers, streams, etc.
+  _timer.cancel();
+
+  // Ahora sí, libera los controladores
+  _controller?.dispose();
+  _controllerCenter.dispose();
+
+  // Finalmente, llama a super.dispose()
+  super.dispose();
   }
 
   void showVideoAlert(String videoUrl, VoidCallback onButtonPressed) {
@@ -435,6 +442,7 @@ class _ResultViewState extends State<ResultView>
                                         .copyWith(color: AppColors.blueDark),
                                   ),
                                   onPressed: () {
+                                    // loadData();
                                     context.router.pushNamed('/');
                                     // if (student != null) {
                                     //   context.router.pushNamed('/');

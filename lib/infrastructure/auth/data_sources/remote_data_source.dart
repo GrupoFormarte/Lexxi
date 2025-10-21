@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:lexxi/config/env_config.dart';
 import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
@@ -15,13 +14,13 @@ class RemoteDataSource {
   String get _baseUrl => EnvConfig.authBaseUrl;
   String get _urlSaf => EnvConfig.authSafUrl;
 
+  String urlExample = 'http://localhost:3000/api';
+
   RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
     final Uri url = Uri.parse('$_baseUrl/users/register');
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
     try {
       final response = await http.post(
         url,
@@ -35,23 +34,27 @@ class RemoteDataSource {
           response.statusCode == 202) {
         return respon;
       } else {
-        final errorMessage = _getErrorMessage(response.statusCode,
-            nameMethod: 'register', e: response.body);
+        final errorMessage = _getErrorMessage(
+          response.statusCode,
+          nameMethod: 'register',
+          e: response.body,
+        );
 
         throw UserException(respon['message']);
       }
     } catch (e) {
-      final errorMessage =
-          _getErrorMessage(500, nameMethod: 'register', e: e.toString());
+      final errorMessage = _getErrorMessage(
+        500,
+        nameMethod: 'register',
+        e: e.toString(),
+      );
       throw UserException(e.toString());
     }
   }
 
   Future<Map<String, dynamic>?> login(Map<String, dynamic> data) async {
     final Uri url = Uri.parse('$_baseUrl/users/login/');
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
     final response = await http.post(
       url,
       headers: headers,
@@ -65,7 +68,7 @@ class RemoteDataSource {
       jwtData.payload['token'] = respon['data']['token'];
       respon['data']['user']['token'] = respon['data']['token'];
       final Map<String, dynamic> userData = respon['data']['user'];
-    
+
       return userData;
     } else {
       final dat = loginSaf(data);
@@ -75,9 +78,8 @@ class RemoteDataSource {
 
   Future<Map<String, dynamic>?> loginSaf(Map<String, dynamic> data) async {
     final Uri url = Uri.parse('$_urlSaf/auth/login');
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
+    print('$_urlSaf/auth/login');
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
     final response = await http.post(
       url,
       headers: headers,
@@ -90,16 +92,26 @@ class RemoteDataSource {
       final jwtData = jwtDecode(respon['token']);
       jwtData.payload['token'] = respon['token'];
       final data = await getDataUser(jwtData.payload);
+      final tokenMongo = await getTokenApiMongo(
+        jwtData.payload['id'],
+        jwtData.payload['token'],
+      );
+
+      await EnvConfig.setTokenForMongo(tokenMongo);
+
       if (data != null) {
         data['institute'] = jwtData.payload['institute'];
       }
-        log(data.toString());
+      log(data.toString());
       return data;
     } else {
-      final errorMessage = _getErrorMessage(response.statusCode,
-          nameMethod: '${response.body}--login');
+      final errorMessage = _getErrorMessage(
+        response.statusCode,
+        nameMethod: '${response.body}--login',
+      );
       throw UserException(
-          respon['message']); // Retorna null en lugar de lanzar una excepción
+        respon['message'],
+      ); // Retorna null en lugar de lanzar una excepción
     }
   }
 
@@ -107,7 +119,7 @@ class RemoteDataSource {
     final token = data['token'];
     var headers = {
       'Authorization': 'Bearer $token',
-      "Content-Type": 'application/json'
+      "Content-Type": 'application/json',
     };
     final response = await http.get(
       Uri.parse('$_urlSaf/user/${data["id"]}'),
@@ -115,37 +127,82 @@ class RemoteDataSource {
     );
     final respon = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      respon['token']=token;
+      respon['token'] = token;
       return respon;
     }
     return null;
   }
 
+  Future<String?> getTokenApiMongo(int id, String token) async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      final Uri url = Uri.parse('$urlExample/auth/podium-login');
+
+      var response = await http.post(
+        url,
+        body: jsonEncode({"userId": '$id', "token": token}),
+        headers: headers,
+      );
+
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData['success'] == true) {
+        return responseData['data']['token'];
+      }
+
+      throw UserException(
+        _getErrorMessage(
+          response.statusCode,
+          nameMethod: 'getTokenReport',
+          e: responseData['message'] ?? 'Failed to get report token',
+        ),
+      );
+    } catch (e) {
+      if (e is UserException) rethrow;
+      throw UserException('Network error: ${e.toString()}');
+    }
+  }
+
   Future<List<dynamic>> _enrolls(int idS) async {
-    var request =
-        http.Request('GET', Uri.parse('$_baseUrl/module/enrolls/student/$idS'));
+    var request = http.Request(
+      'GET',
+      Uri.parse('$_baseUrl/module/enrolls/student/$idS'),
+    );
     http.StreamedResponse response = await request.send();
     try {
       final respon = jsonDecode(await response.stream.bytesToString());
       return respon['enrollments'];
     } catch (e) {
-      final errorMessage =
-          _getErrorMessage(response.statusCode, nameMethod: '_enrolls');
+      final errorMessage = _getErrorMessage(
+        response.statusCode,
+        nameMethod: '_enrolls',
+      );
       throw UserException(errorMessage);
     }
   }
 
   Future<bool> newPassword(
-      String password, String newPassword, String token) async {
+    String password,
+    String newPassword,
+    String token,
+  ) async {
     var headers = {
       'Authorization': 'Bearer $token',
-      "Content-Type": 'application/json'
+      "Content-Type": 'application/json',
     };
     final Uri url = Uri.parse('$_urlSaf/auth/change-password');
-    var response = await http.post(url,
-        body: jsonEncode({"current_password": password, "new_password": newPassword}),
-        headers: headers);
-
+    var response = await http.post(
+      url,
+      body: jsonEncode({
+        "current_password": password,
+        "new_password": newPassword,
+      }),
+      headers: headers,
+    );
 
     try {
       if (response.statusCode == 200) {
@@ -154,10 +211,13 @@ class RemoteDataSource {
         return false;
       }
     } catch (e) {
-      final errorMessage =
-          _getErrorMessage(response.statusCode, nameMethod: 'newPassword');
+      final errorMessage = _getErrorMessage(
+        response.statusCode,
+        nameMethod: 'newPassword',
+      );
       throw UserException(
-          errorMessage); // Retorna null en lugar de lanzar una excepción
+        errorMessage,
+      ); // Retorna null en lugar de lanzar una excepción
     }
   }
 
@@ -171,14 +231,20 @@ class RemoteDataSource {
       respon['grado'] = await _enrolls(respon['id']);
       return respon;
     } else {
-      final errorMessage = _getErrorMessage(response.statusCode,
-          e: response.body, nameMethod: 'getInfouUer');
+      final errorMessage = _getErrorMessage(
+        response.statusCode,
+        e: response.body,
+        nameMethod: 'getInfouUer',
+      );
       throw UserException(errorMessage);
     }
   }
 
-  String _getErrorMessage(int statusCode,
-      {String e = "", String nameMethod = ""}) {
+  String _getErrorMessage(
+    int statusCode, {
+    String e = "",
+    String nameMethod = "",
+  }) {
     switch (statusCode) {
       case 400:
         return 'Solicitud incorrecta $nameMethod\n $e';

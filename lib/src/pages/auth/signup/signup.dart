@@ -106,27 +106,19 @@ class _SignUpState extends State<SignUp> {
     _selectedGender = genders.first;
     _selectedBirthday = DateTime(2000, 1, 1); // Default to Jan 1, 2000
 
-    // Load programs
-    try {
-      programas.value = await item.getAllItemsApi();
-      if (programas.value.isNotEmpty) {
-        _selectedProgram = programas.value[0];
-      }
-    } catch (e) {
-      logger.e("Error loading programs: $e");
-    }
+
 
     // Load states
     try {
       statesNotifier.value =
-          await item.getAllItemsStateAndCity("info/department");
+          await item.getAllItemsStateAndCity("");
       if (statesNotifier.value.isNotEmpty) {
         _selectedState = statesNotifier.value[0];
 
         // Load cities based on selected state
         try {
           cityNotifier.value = await item.getAllItemsStateAndCity(
-              "info/municipality/department/${_selectedState!.codeDep}");
+              "${_selectedState!.codeDep}/cities");
           if (cityNotifier.value.isNotEmpty) {
             _selectedCity = cityNotifier.value[0];
           }
@@ -532,10 +524,11 @@ class _SignUpState extends State<SignUp> {
                                       _selectedState = selectedState;
                                       _selectedCity = null;
                                     });
+                                    cityNotifier.value=[];
                                     if (selectedState != null) {
                                       cityNotifier.value =
                                           await item.getAllItemsStateAndCity(
-                                              "info/municipality/department/${selectedState.codeDep}");
+                                              "${_selectedState!.codeDep}/cities");
                                       if (cityNotifier.value.isNotEmpty) {
                                         setState(() {
                                           _selectedCity = cityNotifier.value[0];
@@ -562,7 +555,7 @@ class _SignUpState extends State<SignUp> {
                                   return const SizedBox();
                                 }
                                 return RoundedDropdown<Item>(
-                                  hintText: "Selecciona una ciudad",
+                                  hintText: "Selecciona la ciudad",
                                   width: 70.w,
                                   items: cities,
                                   itemAsString: (Item city) => city.name!,
@@ -574,7 +567,7 @@ class _SignUpState extends State<SignUp> {
                                   initialValue: _selectedCity ?? cities[0],
                                   validator: (city) {
                                     if (city == null) {
-                                      return 'Por favor, selecciona una ciudad';
+                                      return 'Por favor, selecciona la ciudad';
                                     }
                                     return null;
                                   },

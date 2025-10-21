@@ -40,7 +40,7 @@ void main() {
       // Assert
       verify(mockApiService.createWithId(
         data: student.toJson(),
-        collectionName: 'Estudiantes',
+        collectionName: 'students/Estudiantes',
         id: 'student123',
       )).called(1);
     });
@@ -65,7 +65,7 @@ void main() {
       expect(result, isNotNull);
       expect(result!.idStudent, 'student123');
       verify(mockApiService.getById(
-        collectionName: 'Estudiantes/convert_id',
+        collectionName: 'students/Estudiantes/convert_id',
         id: 'student123',
       )).called(1);
     });
@@ -106,7 +106,7 @@ void main() {
       verify(mockApiService.update(
         id: 'mongo123',
         data: student.toJson(),
-        nameCollection: 'Estudiantes',
+        nameCollection: 'students/Estudiantes',
       )).called(1);
     });
 
@@ -135,7 +135,7 @@ void main() {
       verify(mockApiService.update(
         id: 'student123/config',
         data: config.toJson(),
-        nameCollection: 'Estudiantes',
+        nameCollection: 'students/Estudiantes',
       )).called(1);
     });
 
@@ -158,7 +158,7 @@ void main() {
       expect(result['position'], 5);
       expect(result['n_estudiantes'], 100);
       verify(mockApiService.getById(
-        collectionName: 'get-my-position/11',
+        collectionName: 'students/get-my-position/11',
         id: 'student123',
       )).called(1);
     });

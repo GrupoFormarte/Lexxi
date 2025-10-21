@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: IPreguntaRepository)
 class DetallePreguntaImplement implements IPreguntaRepository {
   final ApiService dbCrud;
-  final String collectionName = 'detail_preguntas';
+  final String collectionName = 'system/detail_preguntas';
 
   DetallePreguntaImplement(this.dbCrud);
 

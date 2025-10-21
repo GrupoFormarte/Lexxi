@@ -1,0 +1,9 @@
+
+
+
+
+
+
+GET http://localhost:3000/api/students/Estudiantes/convert_id/95
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NSIsInVzZXJEYXRhIjp7ImlkIjo5NSwiZW1haWwiOiJtaWxsZXJqZWlzb25AZ21haWwuY29tIiwibmFtZSI6Ik1pbGxlciJ9LCJlbWFpbCI6Im1pbGxlcmplaXNvbkBnbWFpbC5jb20iLCJpYXQiOjE3NTk3NTI3MzksImV4cCI6MTc1OTgzOTEzOSwiYXVkIjoiZm9ybWFydGUtdXNlcnMiLCJpc3MiOiJmb3JtYXJ0ZS1yZXBvcnRzIn0.h0oT_N1zLVyJX_otP5lPJ3HV440HbIo7-Q2CsZob6zk
+Content-Type: application/json

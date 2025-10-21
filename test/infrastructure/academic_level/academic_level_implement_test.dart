@@ -39,7 +39,7 @@ void main() {
         ],
       };
 
-      when(mockApiService.getById(collectionName: 'academic_levels', id: id))
+      when(mockApiService.getById(collectionName: 'system/academic_levels', id: id))
           .thenAnswer((_) async => levelData);
 
       // Act
@@ -50,7 +50,7 @@ void main() {
       expect(result!.idGrado, 'grado10');
       expect(result.levelMax, '100');
       expect(result.typesLevels, hasLength(1));
-      verify(mockApiService.getById(collectionName: 'academic_levels', id: id))
+      verify(mockApiService.getById(collectionName: 'system/academic_levels', id: id))
           .called(1);
     });
 
@@ -58,7 +58,7 @@ void main() {
       // Arrange
       const id = 'grado999';
 
-      when(mockApiService.getById(collectionName: 'academic_levels', id: id))
+      when(mockApiService.getById(collectionName: 'system/academic_levels', id: id))
           .thenAnswer((_) async => null);
 
       // Act
@@ -66,7 +66,7 @@ void main() {
 
       // Assert
       expect(result, isNull);
-      verify(mockApiService.getById(collectionName: 'academic_levels', id: id))
+      verify(mockApiService.getById(collectionName: 'system/academic_levels', id: id))
           .called(1);
     });
   });

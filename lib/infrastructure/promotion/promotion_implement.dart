@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: PromotionRepositorie)
 class PromotionImplement implements PromotionRepositorie {
   final ApiService apiService;
-  final _colecction = "promotion_alert";
+  final _colecction = "system/promotion_alert";
   PromotionImplement(this.apiService);
   @override
   Future<PromotionModel> get() async {

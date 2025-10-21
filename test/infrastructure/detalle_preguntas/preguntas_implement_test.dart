@@ -37,7 +37,7 @@ void main() {
       expect(result, 'pregunta123');
       verify(mockApiService.create(
         data: preguntaData,
-        collectionName: 'detail_preguntas',
+        collectionName: 'system/detail_preguntas',
       )).called(1);
     });
 
@@ -59,7 +59,7 @@ void main() {
       // Assert
       verify(mockApiService.createWithId(
         data: preguntaData,
-        collectionName: 'detail_preguntas',
+        collectionName: 'system/detail_preguntas',
         id: 'pregunta123',
       )).called(1);
     });
@@ -91,7 +91,7 @@ void main() {
       expect(result[0], isA<DetallePregunta>());
       expect(result[1], isA<DetallePregunta>());
       verify(mockApiService.getAll(
-        nameCollection: 'detail_preguntas',
+        nameCollection: 'system/detail_preguntas',
       )).called(1);
     });
 
@@ -114,7 +114,7 @@ void main() {
       expect(result, isA<DetallePregunta>());
       expect(result.id, 'pregunta1');
       verify(mockApiService.getById(
-        collectionName: 'detail_preguntas',
+        collectionName: 'system/detail_preguntas',
         id: 'pregunta1',
       )).called(1);
     });
@@ -138,7 +138,7 @@ void main() {
       verify(mockApiService.update(
         id: 'pregunta1',
         data: preguntaData,
-        nameCollection: 'detail_preguntas',
+        nameCollection: 'system/detail_preguntas',
       )).called(1);
     });
   });
