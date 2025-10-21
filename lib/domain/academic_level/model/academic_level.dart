@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:lexxi/utils/loogers_custom.dart';
 
 AcademicLevelModel academicLevelModelFromJson(String str) =>
     AcademicLevelModel.fromJson(json.decode(str));

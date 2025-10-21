@@ -1,7 +1,7 @@
 import 'package:lexxi/domain/componente_educativo/model/componente_educativo.dart';
 import 'package:lexxi/domain/componente_educativo/repository/componente_educativo_repo.dart';
 import 'package:lexxi/infrastructure/api_service/api_service.dart';
-import 'package:lexxi/utils/loogers_custom.dart';
+
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ComponenteEducativoRepository)

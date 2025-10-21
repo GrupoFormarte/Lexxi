@@ -55,7 +55,7 @@ class Student {
   });
 
   factory Student.fromJson(Map<String, dynamic> json) => Student(
-        idStudent: json["id_student"],
+        idStudent: json["id_estudiante"],
         nombre: json["nombre"],
         idInstituto: json["idInstituto"],
         idMongo: json["_id"],
@@ -79,7 +79,7 @@ class Student {
       );
 
   Map<String, dynamic> toJson() => {
-        "id_student": idStudent,
+        "id_estudiante": idStudent,
         "score_total": score,
         "nombre": nombre,
         "photo":photo,

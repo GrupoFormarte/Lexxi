@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:lexxi/infrastructure/student/repositories/student_implement.dart';
 import 'package:lexxi/infrastructure/api_service/api_service.dart';
 import 'package:lexxi/domain/student/model/student.dart';
-import 'package:lexxi/domain/quiz/model/result_quiz_model.dart';
+
 import 'package:lexxi/domain/auth/model/recordatorio_personalizado.dart';
 
 import 'student_implement_test.mocks.dart';
@@ -48,7 +48,7 @@ void main() {
     test('getInfo debe retornar Student cuando existe', () async {
       // Arrange
       final mockData = {
-        'id_student': 'student123',
+        'id_estudiante': 'student123',
         'nombre': 'Juan',
         'last_name': 'Pérez',
       };

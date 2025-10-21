@@ -3,7 +3,6 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:lexxi/infrastructure/promotion/promotion_implement.dart';
 import 'package:lexxi/infrastructure/api_service/api_service.dart';
-import 'package:lexxi/domain/promotion/model/promotion.dart';
 
 import 'promotion_implement_test.mocks.dart';
 

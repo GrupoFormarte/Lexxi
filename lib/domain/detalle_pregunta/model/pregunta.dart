@@ -78,9 +78,7 @@ class DetallePregunta {
         "cant_respuesta": cantRespuesta,
         "pregunta": pregunta,
         "pregunta_correcta": respuestaCorrecta,
-        "respuestas": respuestas == null
-            ? []
-            : List<dynamic>.from(respuestas.map((x) => x)),
+        "respuestas": List<dynamic>.from(respuestas.map((x) => x)),
       };
 
   Map<String, dynamic> toJsonNonNull() {

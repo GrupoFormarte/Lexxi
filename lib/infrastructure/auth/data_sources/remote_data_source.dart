@@ -34,7 +34,7 @@ class RemoteDataSource {
           response.statusCode == 202) {
         return respon;
       } else {
-        final errorMessage = _getErrorMessage(
+    _getErrorMessage(
           response.statusCode,
           nameMethod: 'register',
           e: response.body,
@@ -43,7 +43,7 @@ class RemoteDataSource {
         throw UserException(respon['message']);
       }
     } catch (e) {
-      final errorMessage = _getErrorMessage(
+ _getErrorMessage(
         500,
         nameMethod: 'register',
         e: e.toString(),

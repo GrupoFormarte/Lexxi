@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:mockito/mockito.dart';
+
 import 'package:mockito/annotations.dart';
 import 'package:lexxi/infrastructure/image/image_implement.dart';
 
-import 'image_implement_test.mocks.dart';
 
 @GenerateMocks([http.Client])
 void main() {

@@ -6,7 +6,7 @@ void main() {
     test('Student.fromJson debe crear instancia desde JSON', () {
       // Arrange
       final json = {
-        'id_student': '123',
+        'id_estudiante': '123',
         'nombre': 'Juan Perez',
         'idInstituto': '1',
         'score_total': '100',
@@ -48,7 +48,7 @@ void main() {
       final json = student.toJson();
 
       // Assert
-      expect(json['id_student'], '123');
+      expect(json['id_estudiante'], '123');
       expect(json['nombre'], 'Maria Garcia');
       expect(json['email'], 'maria@test.com');
     });
@@ -56,7 +56,7 @@ void main() {
     test('Student.fromJson debe manejar grados vacios', () {
       // Arrange
       final json = {
-        'id_student': '456',
+        'id_estudiante': '456',
         'nombre': 'Pedro',
       };
 
@@ -70,7 +70,7 @@ void main() {
     test('Student.fromJson debe manejar config nulo', () {
       // Arrange
       final json = {
-        'id_student': '789',
+        'id_estudiante': '789',
         'nombre': 'Ana',
       };
 
