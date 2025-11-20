@@ -31,6 +31,7 @@ class _LoginState extends State<Login> {
   final FocusNode _nextFocusNode = FocusNode();
 
   String? error;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -39,9 +40,9 @@ class _LoginState extends State<Login> {
     if (kDebugMode) {
       // email = "desarrollador@grupoformarte.edu.co";
       // email = "millerjeison@gmail.com";
-      // password = "1128430148";
-      email = "direccioncali@grupoformarte.edu.co";
-      password = "43996311";
+      // password = "123456789";
+      // email = "direccioncali@grupoformarte.edu.co";
+      // password = "43996311";
       // password = "123456789";
       // email = "testapp50@grupoformarte.edu.co";
       // password = "423456789";
@@ -49,8 +50,8 @@ class _LoginState extends State<Login> {
       // email = "vanesaw@gmail.com";
       // password = "e4414910";
 
-      // email = "coordinacionvirtual@grupoformarte.edu.co";
-      // password = "1010221676";
+      email = "coordinacionvirtual@grupoformarte.edu.co";
+      password = "1010221676";
       // email = "es.restrepo@grupoformarte.edu.co";
       // password = "1058199219";
       // password = "Edinson4414910!";
@@ -133,18 +134,27 @@ class _LoginState extends State<Login> {
                       ),
                     ],
                   ),
-                  GradientButton(
-                    text: 'Ingresar',
-                    onPressed: _submit,
-                  ),
-                  InkWell(
-                    onTap: _register,
-                    child: const Text(
-                      'Registrar',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: AppColors.white),
+                  if (_isLoading)
+                    const Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                      ),
+                    )
+                  else ...[
+                    GradientButton(
+                      text: 'Ingresar',
+                      onPressed: _submit,
                     ),
-                  ),
+                    InkWell(
+                      onTap: _register,
+                      child: const Text(
+                        'Registrar',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: AppColors.white),
+                      ),
+                    ),
+                  ],
                   if (error != null)
                     GestureDetector(
                       onTap: () async {
@@ -182,39 +192,65 @@ class _LoginState extends State<Login> {
   }
 
   void _submit() async {
-    // try {
-    final validLogin = LoginModel(email!, password!);
-    final userProvider = context.read<DataUserProvider>();
+    if (_isLoading) return; // Prevenir múltiples clicks
 
-    if (!validLogin.isValid()) {
+    setState(() {
+      _isLoading = true;
+      error = null;
+    });
+
+    try {
+      final validLogin = LoginModel(email!, password!);
+      final userProvider = context.read<DataUserProvider>();
+
+      if (!validLogin.isValid()) {
+        setState(() {
+          _isLoading = false;
+        });
+        MotionToast.error(
+                toastDuration: const Duration(seconds: 3),
+                description: const Text("Faltan campos por llenar"))
+            .show(context);
+        return;
+      }
+
+      final response = await _authService!.execute(validLogin);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response == null) {
+        MotionToast.error(
+                toastDuration: const Duration(seconds: 3),
+                description: const Text("Correo o contraseña incorrectos"))
+            .show(context);
+        return;
+      }
+
+      userProvider.userViewModel = response;
+
+      if (!mounted) return;
+
+      if (response.typeUser == 'student') {
+        context.router.replaceNamed('/all_programs');
+        return;
+      }
+      context.router.replaceNamed('/home');
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        error = e.toString();
+      });
+
       MotionToast.error(
               toastDuration: const Duration(seconds: 3),
-              description: const Text("Faltan campos por llenar"))
+              description: Text("Error: ${e.toString()}"))
           .show(context);
-      return;
     }
-
-    final response = await _authService!.execute(validLogin);
-
-    // final permision = json.decode(response!.typeUser!);
-
-    if (response == null) {
-      MotionToast.error(
-              toastDuration: const Duration(seconds: 3),
-              description: const Text("Correo o contraseña incorrectos"))
-          .show(context);
-      return;
-    }
-
-    userProvider.userViewModel = response;
-
-    if (!mounted) return;
-
-    if (response.typeUser == 'student') {
-      context.router.replaceNamed('/all_programs');
-      return;
-    }
-// all_programs
-    context.router.replaceNamed('/home');
   }
 }

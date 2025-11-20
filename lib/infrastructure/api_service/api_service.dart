@@ -86,13 +86,13 @@ class ApiService {
       headers: EnvConfig.defaultHeaders,
     );
     print('$baseUrl/$nameCollection');
-print(json.decode(response.body));
+print(EnvConfig.defaultHeaders);
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body)['data'];
 
       return data.map((item) => item as Map<String, dynamic>).toList();
     } else {
-      logger.e('Failed to load items');
+      logger.e(['Failed to load items',json.decode(response.body)]);
       return [];
     }
   }

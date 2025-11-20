@@ -20,9 +20,17 @@ class UserImplement implements LoginRepository {
   @override
   Future<User?> auth(LoginModel login) async {
     try {
+      print('[UserImplement.auth] Iniciando autenticación');
       final userData = await _remoteDataSource.login(login.toJson());
-      if (userData == null) return null;
-      /* 
+
+      if (userData == null) {
+        print('[UserImplement.auth] userData es null, retornando null');
+        return null;
+      }
+
+      print('[UserImplement.auth] userData recibido: $userData');
+
+      /*
       gabrieldelarosagaray@gmail.com
       1102835545
       */
@@ -49,13 +57,21 @@ class UserImplement implements LoginRepository {
           "id": "668d39d63abc9ff60a7979d6"
         }
       ];
+
+      print('[UserImplement.auth] userData después de agregar grados: $userData');
+
       await _localstorageShared.addToSharedPref(
           key: 'user', value: json.encode(userData));
 
+      print('[UserImplement.auth] Llamando a User.fromJson');
       final user = User.fromJson(userData);
+      print('[UserImplement.auth] Usuario creado exitosamente: ${user.email}');
 
       return user;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('[UserImplement.auth] ERROR: $e');
+      print('[UserImplement.auth] StackTrace: $stackTrace');
+      logger.e("Error en UserImplement auth: $e");
       throw UserException(e.toString());
     }
   }

@@ -41,7 +41,7 @@ Future<void> main() async {
   tz.setLocalLocation(bogota);
   // Configuración inicial para Android e iOS
   var initializationSettingsAndroid =
-      const AndroidInitializationSettings('@mipmap/ic_launcher');
+      const AndroidInitializationSettings('@mipmap/launcher_icon');
   // Configuración inicial para iOS
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(

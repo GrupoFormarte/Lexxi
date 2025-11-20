@@ -39,13 +39,11 @@ class _QuestionsState extends State<Questions>
   final ValueNotifier<int> _selectedIndex = ValueNotifier(-1);
   late ScrollController _scrollController;
 
-  late HtmlContentParser _contentParser;
   List<ComponenteEducativo> respuestasNewOrder = [];
 
   @override
   void initState() {
     super.initState();
-    _contentParser = HtmlContentParser();
 
     _animationController = AnimationController(
       vsync: this,

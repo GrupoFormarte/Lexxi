@@ -7,6 +7,7 @@ import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:jwt_decode_full/jwt_decode_full.dart';
+import 'package:lexxi/utils/loogers_custom.dart';
 
 @injectable
 class RemoteDataSource {
@@ -19,7 +20,7 @@ class RemoteDataSource {
   RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/users/register');
+    final Uri url = Uri.parse('$_baseUrl/auth/register');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     try {
       final response = await http.post(
@@ -34,7 +35,7 @@ class RemoteDataSource {
           response.statusCode == 202) {
         return respon;
       } else {
-    _getErrorMessage(
+        _getErrorMessage(
           response.statusCode,
           nameMethod: 'register',
           e: response.body,
@@ -43,17 +44,13 @@ class RemoteDataSource {
         throw UserException(respon['message']);
       }
     } catch (e) {
- _getErrorMessage(
-        500,
-        nameMethod: 'register',
-        e: e.toString(),
-      );
+      _getErrorMessage(500, nameMethod: 'register', e: e.toString());
       throw UserException(e.toString());
     }
   }
 
   Future<Map<String, dynamic>?> login(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/users/login/');
+    final Uri url = Uri.parse('$_baseUrl/api/auth/login');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     final response = await http.post(
       url,
@@ -64,10 +61,15 @@ class RemoteDataSource {
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         response.statusCode == 202) {
-      final jwtData = jwtDecode(respon['data']['token']);
-      jwtData.payload['token'] = respon['data']['token'];
-      respon['data']['user']['token'] = respon['data']['token'];
+      final jwtData = jwtDecode(respon['token']??respon['data']['token']);
+      jwtData.payload['token'] = respon['token']??respon['data']['token'];
+      respon['data']['user']['token'] =
+          respon['token']??respon['data']['token'];
       final Map<String, dynamic> userData = respon['data']['user'];
+      // print(['$_baseUrl/auth/login/', respon]);
+      await EnvConfig.setTokenForMongo(
+        respon['token']??respon['data']['token'],
+      );
 
       return userData;
     } else {
@@ -78,7 +80,6 @@ class RemoteDataSource {
 
   Future<Map<String, dynamic>?> loginSaf(Map<String, dynamic> data) async {
     final Uri url = Uri.parse('$_urlSaf/auth/login');
-    print('$_urlSaf/auth/login');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     final response = await http.post(
       url,
@@ -92,6 +93,7 @@ class RemoteDataSource {
       final jwtData = jwtDecode(respon['token']);
       jwtData.payload['token'] = respon['token'];
       final data = await getDataUser(jwtData.payload);
+
       final tokenMongo = await getTokenApiMongo(
         jwtData.payload['id'],
         jwtData.payload['token'],
@@ -126,6 +128,8 @@ class RemoteDataSource {
       headers: headers,
     );
     final respon = jsonDecode(response.body);
+        print(['---',respon]);
+
     if (response.statusCode == 200) {
       respon['token'] = token;
       return respon;
@@ -141,15 +145,18 @@ class RemoteDataSource {
         'Authorization': 'Bearer $token',
       };
 
-      final Uri url = Uri.parse('$urlExample/auth/podium-login');
+      final Uri url = Uri.parse('$_baseUrl/api/auth/podium-login');
 
       var response = await http.post(
         url,
         body: jsonEncode({"userId": '$id', "token": token}),
         headers: headers,
       );
+            print(['$_baseUrl/auth/podium-login',]);
+
 
       final responseData = jsonDecode(response.body);
+
       if (response.statusCode == 200 && responseData['success'] == true) {
         return responseData['data']['token'];
       }

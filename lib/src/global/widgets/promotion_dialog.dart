@@ -143,7 +143,7 @@ class _PromotionDialogState extends State<PromotionDialog> {
           child: TextButton(
             onPressed: widget.onClik,
             child: Text(
-              widget.promotion.buttonText,
+              "Finalizar",
               style: const TextStyle(
                 color: AppColors.blueDark,
                 fontWeight: FontWeight.bold,

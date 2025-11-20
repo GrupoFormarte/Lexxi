@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(flutter test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(flutter --version:*)",
+      "Bash(cd:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []

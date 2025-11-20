@@ -18,10 +18,12 @@ import 'package:lexxi/src/global/colors_custom.dart';
 import 'package:lexxi/src/global/extensions/build_context_ext.dart';
 import 'package:lexxi/src/global/widgets/gradient_rect_slider_track_shape.dart';
 import 'package:lexxi/src/global/widgets/medalla_rive.dart';
+import 'package:lexxi/src/global/widgets/promotion_dialog.dart';
 import 'package:lexxi/src/global/widgets/video_alert_dialog.dart';
 import 'package:lexxi/src/providers/data_user_provider.dart';
 import 'package:lexxi/src/providers/grado_provider.dart';
 import 'package:lexxi/src/providers/resumen_quiz_provider.dart';
+import 'package:lexxi/utils/whatsapp.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:sizer/sizer.dart';
@@ -184,8 +186,7 @@ class _ResultViewState extends State<ResultView>
         }
       }
 
-
-// print([student!.toJson()]);
+      // print([student!.toJson()]);
       _studentService.update(student!);
     }
     setState(() {});
@@ -195,17 +196,17 @@ class _ResultViewState extends State<ResultView>
   void dispose() {
     // Primero detén las animaciones
 
-  _controllerCenter.stop();
+    _controllerCenter.stop();
 
-  // Luego cancela timers, streams, etc.
-  _timer.cancel();
+    // Luego cancela timers, streams, etc.
+    _timer.cancel();
 
-  // Ahora sí, libera los controladores
-  _controller?.dispose();
-  _controllerCenter.dispose();
+    // Ahora sí, libera los controladores
+    _controller?.dispose();
+    _controllerCenter.dispose();
 
-  // Finalmente, llama a super.dispose()
-  super.dispose();
+    // Finalmente, llama a super.dispose()
+    super.dispose();
   }
 
   void showVideoAlert(String videoUrl, VoidCallback onButtonPressed) {
@@ -443,29 +444,33 @@ class _ResultViewState extends State<ResultView>
                                   ),
                                   onPressed: () {
                                     // loadData();
-                                    context.router.pushNamed('/');
-                                    // if (student != null) {
-                                    //   context.router.pushNamed('/');
-                                    //   return;
-                                    // }
+                                    // context.router.pushNamed('/');
+                                    if (student != null) {
+                                      context.router.pushNamed('/');
+                                      return;
+                                    }
                                     // showVideoAlert(
                                     //     "assets/videos/Calendario-B2025_1.mp4",
-                                   
 
-                                    // showPromotionDialog(
-                                    //   context,
-                                    //   promotion: _promotion,
-                                    //   onClik: () {
-                                    //     final message =
-                                    //         '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
-                                    //         'Detalles: ${_promotion.description}';
-                                    //     launchWhatsAppUri(
-                                    //       '+573183491375',
-                                    //       message,
-                                    //     );
-                                   //         context.router.pushNamed('/');  () {});
-                                    //   },
-                                    // );
+                                    if (_promotion.fileType == 'none') {
+                                      context.router.pushNamed('/');
+                                      return;
+                                    }
+                                      showPromotionDialog(
+                                        context,
+                                        promotion: _promotion,
+                                        onClik: () {
+                                          final message =
+                                              '¡Hola! Me interesa la promoción: ${_promotion.title}.\n'
+                                              'Detalles: ${_promotion.description}';
+                                          launchWhatsAppUri(
+                                            '+573183491375',
+                                            message,
+                                          );
+                                          context.router.pushNamed('/');
+                                        },
+                                      );
+                                    
                                   },
                                 ),
                               ),

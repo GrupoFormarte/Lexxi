@@ -57,7 +57,31 @@ class User {
     this.institute,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory User.fromJson(Map<String, dynamic> json) {
+    try {
+      print('[User.fromJson] Iniciando parseo de usuario');
+      print('[User.fromJson] JSON recibido: $json');
+
+      // Parsear grado con manejo de errores
+      List<Grado>? gradoList;
+      try {
+        if (json["grado"] != null) {
+          print('[User.fromJson] Parseando grados: ${json["grado"]}');
+          gradoList = List<Grado>.from(json["grado"]!.map((x) {
+            print('[User.fromJson] Parseando grado individual: $x');
+            return Grado.fromJson(x);
+          }));
+        } else {
+          gradoList = [];
+        }
+      } catch (e, stackTrace) {
+        print('[User.fromJson] ERROR al parsear grados: $e');
+        print('[User.fromJson] StackTrace: $stackTrace');
+        gradoList = [];
+      }
+
+      print('[User.fromJson] Creando objeto User');
+      return User(
         id: json["id"] ?? json["_id"],
         name: json["name"],
         institute: json["institute"],
@@ -79,10 +103,15 @@ class User {
         profile: json["profile"],
         token: json["token"],
         active: json["active"],
-        grado: json["grado"] == null
-            ? []
-            : List<Grado>.from(json["grado"]!.map((x) => Grado.fromJson(x))),
+        grado: gradoList,
       );
+    } catch (e, stackTrace) {
+      print('[User.fromJson] ERROR CRÍTICO: $e');
+      print('[User.fromJson] StackTrace: $stackTrace');
+      print('[User.fromJson] JSON que causó el error: $json');
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -129,14 +158,28 @@ class Grado {
     this.status,
   });
 
-  factory Grado.fromJson(Map<String, dynamic> json) => Grado(
-        id: json["id"],
+  factory Grado.fromJson(Map<String, dynamic> json) {
+    try {
+      print('[Grado.fromJson] Parseando grado con datos: $json');
+
+      final grado = Grado(
+        id: json["id"]?.toString(),
         studentId: json["studentId"],
-        programCode: json["programCode"],
-        programName: json["programName"],
-        shortName: json["shortName"],
+        programCode: json["programCode"]?.toString(),
+        programName: json["programName"]?.toString(),
+        shortName: json["shortName"]?.toString(),
         status: json["status"],
       );
+
+      print('[Grado.fromJson] Grado parseado exitosamente: id=${grado.id}, programCode=${grado.programCode}');
+      return grado;
+    } catch (e, stackTrace) {
+      print('[Grado.fromJson] ERROR al parsear grado: $e');
+      print('[Grado.fromJson] StackTrace: $stackTrace');
+      print('[Grado.fromJson] JSON: $json');
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,

@@ -45,5 +45,45 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <false/>
+  <key>CADisableMinimumFrameDurationOnPhone</key>
+  <true/>
+  <key>UIApplicationSupportsIndirectInputEvents</key>
+  <true/>
+  <key>LSApplicationQueriesSchemes</key>
+  <array>
+    <string>https</string>
+    <string>http</string>
+    <string>whatsapp</string>
+  </array>
+  <key>NSUserNotificationUsageDescription</key>
+  <string>Esta aplicación quiere enviarte notificaciones.</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+  </array>
+  <key>FirebaseAppDelegateProxyEnabled</key>
+  <false/>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>$(PRODUCT_NAME) location use.</string>
+  <key>NSLocationAlwaysUsageDescription</key>
+  <string>$(PRODUCT_NAME) location use.</string>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>$(PRODUCT_NAME) location use.</string>
+  <key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>whatsapp</string>
+</array>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
+  <key>NSCameraUsageDescription</key>
+  <string>Esta aplicación necesita acceso a la cámara para tomar fotos y actualizar tu imagen de perfil.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Esta aplicación necesita acceso a tu galería de fotos para seleccionar imágenes y actualizar tu imagen de perfil.</string>
 </dict>
 </plist>
