@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:lexxi/config/env_config.dart';
 import 'package:lexxi/domain/image/repository/image_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -10,7 +11,7 @@ import 'package:mime/mime.dart';
 
 @LazySingleton(as: ImageRepository)
 class ImageImplement implements ImageRepository {
-  final String _baseUrl = 'https://app.formarte.co/images';
+  final String _baseUrl = 'https://app.formarte.co/api/media/images';
   // String _baseUrl = 'http://localhost:3000/images';
 
   ImageImplement() {
@@ -19,7 +20,14 @@ class ImageImplement implements ImageRepository {
     }
   }
 
-/*  
+
+
+ Future<void> _ensureTokenLoaded() async {
+
+      await EnvConfig.loadTokenForMongo();
+    
+ }
+  /*  
  @override
   Future<String> uploadImage(String base64Image) async {
     var uri = Uri.parse('$_baseUrl/upload');
@@ -37,7 +45,10 @@ class ImageImplement implements ImageRepository {
 
   @override
   Future<String> uploadImage(
-      Uint8List fileBytes, String fileName, String token) async {
+    Uint8List fileBytes,
+    String fileName,
+    String token,
+  ) async {
     var headers = {'Authorization': 'Bearer $token'};
     try {
       // Obtener el tipo MIME del archivo
@@ -45,17 +56,21 @@ class ImageImplement implements ImageRepository {
       if (mimeType == null) {
         throw Exception('No se pudo determinar el tipo MIME del archivo');
       }
-      var request =
-          http.MultipartRequest('POST', Uri.parse('$_baseUrl/upload'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/upload'),
+      );
 
-      request.files.add(http.MultipartFile.fromBytes(
-        'file[]',
-        fileBytes,
-        filename:
-            fileName, // Usa el nombre del archivo con la extensión adecuada
-        contentType: MediaType.parse(mimeType), // Asegurar el tipo MIME
-      ));
-
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file[]',
+          fileBytes,
+          filename:
+              fileName, // Usa el nombre del archivo con la extensión adecuada
+          contentType: MediaType.parse(mimeType), // Asegurar el tipo MIME
+        ),
+      );
+// 1128430130
       request.headers.addAll(headers);
 
       http.StreamedResponse response = await request.send();
@@ -73,18 +88,20 @@ class ImageImplement implements ImageRepository {
   }
 
   @override
-  Future<String> uploadImageBase64(Uint8List fileBytes, String fileName) async {
+  Future<String> uploadImageBase64(
+    Uint8List fileBytes,
+    String fileName
+  ) async {
+
+    await _ensureTokenLoaded();
     try {
       String base64Image = base64Encode(fileBytes);
-
       var uri = Uri.parse('$_baseUrl/upload');
       var request = http.Request('POST', uri);
 
-      request.body = json.encode({
-        'image': base64Image,
-      });
+      request.body = json.encode({'image': base64Image});
 
-      request.headers.addAll({'Content-Type': 'application/json'});
+      request.headers.addAll(EnvConfig.defaultHeaders);
 
       var response = await request.send();
       final responseData = await response.stream.bytesToString();
@@ -94,9 +111,10 @@ class ImageImplement implements ImageRepository {
 
         return map['data']['url'];
       } else {
-        throw Exception('Failed to upload image: ${response.reasonPhrase}');
+        throw Exception('Failed to upload image:$_baseUrl/upload -${EnvConfig.defaultHeaders}- ${response.reasonPhrase}');
       }
     } catch (e) {
+      print(e.toString());
       throw Exception('Error uploading base64 image: $e');
     }
   }
@@ -106,7 +124,8 @@ class ImageImplement implements ImageRepository {
       return base64Decode(base64String);
     } catch (e) {
       throw FormatException(
-          "La cadena proporcionada no es un Base64 válido: $e");
+        "La cadena proporcionada no es un Base64 válido: $e",
+      );
     }
   }
 

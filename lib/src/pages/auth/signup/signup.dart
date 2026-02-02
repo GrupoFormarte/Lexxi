@@ -85,7 +85,29 @@ class _SignUpState extends State<SignUp> {
   // Notificadores para estados, ciudades y programas
   ValueNotifier<List<Item>> statesNotifier = ValueNotifier([]);
   ValueNotifier<List<Item>> cityNotifier = ValueNotifier([]);
-  ValueNotifier<List<Item>> programas = ValueNotifier([]);
+  ValueNotifier<List<Item>> programas = ValueNotifier([
+    Item.fromJson({
+      "programName": "Preuniversitario UdeA",
+      "programCode": "PUA",
+      "shortName": "Pre Udea",
+      "colecction": null,
+      "id": "668d39d63abc9ff60a7979d2",
+    }),
+    Item.fromJson({
+      "programName": "Preuniversitario Unal",
+      "programCode": "PUN",
+      "shortName": "Pre Unal",
+      "colecction": null,
+      "id": "668d39d63abc9ff60a7979d4",
+    }),
+    Item.fromJson({
+      "programName": "Pre Saber",
+      "programCode": "PSB",
+      "shortName": "Pre Saber",
+      "colecction": null,
+      "id": "668d39d63abc9ff60a7979d6",
+    }),
+  ]);
 
   // Variable para manejar errores
   String? error;
@@ -105,20 +127,18 @@ class _SignUpState extends State<SignUp> {
     _selectedTypeDocument = typesDocument.first;
     _selectedGender = genders.first;
     _selectedBirthday = DateTime(2000, 1, 1); // Default to Jan 1, 2000
-
-
-
+_selectedProgram=programas.value.isNotEmpty?programas.value[0]:null;
     // Load states
     try {
-      statesNotifier.value =
-          await item.getAllItemsStateAndCity("");
+      statesNotifier.value = await item.getAllItemsStateAndCity("");
       if (statesNotifier.value.isNotEmpty) {
         _selectedState = statesNotifier.value[0];
 
         // Load cities based on selected state
         try {
           cityNotifier.value = await item.getAllItemsStateAndCity(
-              "${_selectedState!.codeDep}/cities");
+            "${_selectedState!.codeDep}/cities",
+          );
           if (cityNotifier.value.isNotEmpty) {
             _selectedCity = cityNotifier.value[0];
           }
@@ -181,15 +201,15 @@ class _SignUpState extends State<SignUp> {
         "birthday": _selectedBirthday != null
             ? "${_selectedBirthday!.year}-${_selectedBirthday!.month.toString().padLeft(2, '0')}-${_selectedBirthday!.day.toString().padLeft(2, '0')}"
             : "",
-        "programa": _selectedProgram!.shortName
+        "programa": _selectedProgram!.shortName,
       };
 
       final data = RegisterModel.fromJson(signUpData);
       try {
         await _authService!.register(data);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registro exitoso")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Registro exitoso")));
         context.router.replaceNamed('/login');
       } catch (e) {
         String errorMessage = e.toString().trim();
@@ -208,8 +228,10 @@ class _SignUpState extends State<SignUp> {
           SnackBar(
             content: Text(errorMessage),
             behavior: SnackBarBehavior.floating,
-            margin:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
           ),
         );
       }
@@ -230,8 +252,10 @@ class _SignUpState extends State<SignUp> {
                 child: Container(
                   width: 150,
                   decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("assets/logo_lexxi.png"))),
+                    image: DecorationImage(
+                      image: AssetImage("assets/logo_lexxi.png"),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -262,9 +286,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               margin: const EdgeInsets.symmetric(vertical: 20),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 10),
                             Container(
                               width: 80,
                               height: 50,
@@ -282,8 +304,9 @@ class _SignUpState extends State<SignUp> {
                         //----
                         Center(
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24.0,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -345,7 +368,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _nameController,
                               hintText: 'Primer Nombre*',
-                              width: 70.w,
+                              width: 90.w,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
                               },
@@ -361,7 +384,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _secondNameController,
                               hintText: 'Segundo Nombre',
-                              width: 70.w,
+                              width: 90.w,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
                               },
@@ -372,7 +395,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _lastNameController,
                               hintText: 'Primer Apellido*',
-                              width: 70.w,
+                              width: 90.w,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
                               },
@@ -388,7 +411,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _secondLastNameController,
                               hintText: 'Segundo Apellido',
-                              width: 70.w,
+                              width: 90.w,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
                               },
@@ -398,7 +421,7 @@ class _SignUpState extends State<SignUp> {
                             // Fecha de Nacimiento
                             RoundedDatePicker(
                               hintText: "Fecha de nacimiento",
-                              width: 70.w,
+                              width: 90.w,
                               initialDate: _selectedBirthday,
                               firstDate: DateTime(1900, 1, 1),
                               lastDate: DateTime.now(),
@@ -416,7 +439,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _emailController,
                               hintText: 'Correo',
-                              width: 70.w,
+                              width: 90.w,
                               keyboardType: TextInputType.emailAddress,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
@@ -426,8 +449,9 @@ class _SignUpState extends State<SignUp> {
                                   return 'Por favor, ingresa tu correo electrónico';
                                 }
                                 final emailRegex = RegExp(
-                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@"
-                                    r"[a-zA-Z0-9]+\.[a-zA-Z]+");
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@"
+                                  r"[a-zA-Z0-9]+\.[a-zA-Z]+",
+                                );
                                 if (!emailRegex.hasMatch(value)) {
                                   return 'Por favor, ingresa un correo válido';
                                 }
@@ -439,7 +463,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedTextField(
                               controller: _phoneController,
                               hintText: 'Teléfono',
-                              width: 70.w,
+                              width: 90.w,
                               keyboardType: TextInputType.phone,
                               onSubmitted: (_) {
                                 FocusScope.of(context).nextFocus();
@@ -460,7 +484,7 @@ class _SignUpState extends State<SignUp> {
                             RoundedDropdownAndTextField<TypeDocument>(
                               dropdownHint: "Tipo de documento",
                               textFieldHint: "Número de documento",
-                              totalWidth: 70.w,
+                              totalWidth: 90.w,
                               dropdownItems: typesDocument,
                               dropdownItemAsString: (TypeDocument typeDoc) =>
                                   typeDoc.abrev,
@@ -490,7 +514,7 @@ class _SignUpState extends State<SignUp> {
                             // Género
                             RoundedDropdown<Gender>(
                               hintText: "Selecciona género",
-                              width: 70.w,
+                              width: 90.w,
                               items: genders,
                               itemAsString: (Gender gen) => gen.name,
                               onChanged: (Gender? selectedGender) {
@@ -516,7 +540,7 @@ class _SignUpState extends State<SignUp> {
                                 }
                                 return RoundedDropdown<Item>(
                                   hintText: "Selecciona un estado",
-                                  width: 70.w,
+                                  width: 90.w,
                                   items: states,
                                   itemAsString: (Item state) => state.name!,
                                   onChanged: (Item? selectedState) async {
@@ -524,11 +548,12 @@ class _SignUpState extends State<SignUp> {
                                       _selectedState = selectedState;
                                       _selectedCity = null;
                                     });
-                                    cityNotifier.value=[];
+                                    cityNotifier.value = [];
                                     if (selectedState != null) {
-                                      cityNotifier.value =
-                                          await item.getAllItemsStateAndCity(
-                                              "${_selectedState!.codeDep}/cities");
+                                      cityNotifier.value = await item
+                                          .getAllItemsStateAndCity(
+                                            "${_selectedState!.codeDep}/cities",
+                                          );
                                       if (cityNotifier.value.isNotEmpty) {
                                         setState(() {
                                           _selectedCity = cityNotifier.value[0];
@@ -556,7 +581,7 @@ class _SignUpState extends State<SignUp> {
                                 }
                                 return RoundedDropdown<Item>(
                                   hintText: "Selecciona la ciudad",
-                                  width: 70.w,
+                                  width: 90.w,
                                   items: cities,
                                   itemAsString: (Item city) => city.name!,
                                   onChanged: (Item? selectedCity) {
@@ -584,7 +609,7 @@ class _SignUpState extends State<SignUp> {
                                 }
                                 return RoundedDropdown<Item>(
                                   hintText: "Selecciona el programa",
-                                  width: 70.w,
+                                  width: 90.w,
                                   items: programasList,
                                   itemAsString: (Item program) =>
                                       program.shortName!,
@@ -615,8 +640,10 @@ class _SignUpState extends State<SignUp> {
                             if (error != null)
                               GestureDetector(
                                 onTap: () async {
-                                  launchWhatsAppUri('+573183491375',
-                                      'El usuario con el correo: ${_emailController.text.trim()}, tiene el siguiente error: $error');
+                                  launchWhatsAppUri(
+                                    '+573183491375',
+                                    'El usuario con el correo: ${_emailController.text.trim()}, tiene el siguiente error: $error',
+                                  );
                                 },
                                 child: Column(
                                   children: [
@@ -631,7 +658,8 @@ class _SignUpState extends State<SignUp> {
                                     Text(
                                       "Si persiste este error informar aquí",
                                       style: TextStyle(
-                                          color: Colors.redAccent[100]),
+                                        color: Colors.redAccent[100],
+                                      ),
                                     ),
                                   ],
                                 ),

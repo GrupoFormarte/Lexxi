@@ -20,7 +20,7 @@ class RemoteDataSource {
   RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/auth/register');
+    final Uri url = Uri.parse('$_baseUrl/api/auth/register');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     try {
       final response = await http.post(
@@ -58,6 +58,8 @@ class RemoteDataSource {
       body: jsonEncode(data),
     );
     final respon = jsonDecode(response.body);
+    print(  ['login userData',respon]);
+
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         response.statusCode == 202) {
@@ -152,7 +154,7 @@ class RemoteDataSource {
         body: jsonEncode({"userId": '$id', "token": token}),
         headers: headers,
       );
-            print(['$_baseUrl/auth/podium-login',]);
+            print([{"userId": '$id', "token": token},'$_baseUrl/auth/podium-login',]);
 
 
       final responseData = jsonDecode(response.body);

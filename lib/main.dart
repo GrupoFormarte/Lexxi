@@ -57,6 +57,17 @@ Future<void> main() async {
       iOS: initializationSettingsDarwin);
 
   await flutterLocalNotificationsPlugin.initialize(initSettings);
+
+  // Solicitar permisos de notificación en Android 13+
+  if (Platform.isAndroid) {
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+    }
+  }
+
 //  FirebaseMessagingService.requestPermission();
 //   FirebaseMessagingService.getToken();
 
