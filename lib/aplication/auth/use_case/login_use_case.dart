@@ -1,20 +1,15 @@
+import 'package:injectable/injectable.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:lexxi/domain/auth/repositories/login_repository.dart';
-import 'package:injectable/injectable.dart';
-
 
 @injectable
 class LoginUseCase {
-  final LoginRepository _loginRepository;
+  final LoginRepository _repository;
 
-  LoginUseCase(this._loginRepository);
+  LoginUseCase(this._repository);
 
-  Future<User?> execute(LoginModel login) async {
-    try {
-      return await _loginRepository.auth(login);
-    } catch (e) {
-      return null;
-    }
+  Future<User?> call(LoginModel login) {
+    return _repository.auth(login);
   }
 }

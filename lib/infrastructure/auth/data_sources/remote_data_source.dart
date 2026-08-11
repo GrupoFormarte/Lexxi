@@ -11,7 +11,6 @@ import 'package:lexxi/utils/loogers_custom.dart';
 
 @injectable
 class RemoteDataSource {
-  // Las URLs ahora se obtienen desde las variables de entorno
   String get _baseUrl => EnvConfig.authBaseUrl;
   String get _urlSaf => EnvConfig.authSafUrl;
 
@@ -66,7 +65,6 @@ class RemoteDataSource {
       respon['data']['user']['token'] =
           respon['token']??respon['data']['token'];
       final Map<String, dynamic> userData = respon['data']['user'];
-      // print(['$_baseUrl/auth/login/', respon]);
       await EnvConfig.setTokenForMongo(
         respon['token']??respon['data']['token'],
       );
@@ -113,7 +111,7 @@ class RemoteDataSource {
       );
       throw UserException(
         respon['message'],
-      ); // Retorna null en lugar de lanzar una excepción
+      ); 
     }
   }
 

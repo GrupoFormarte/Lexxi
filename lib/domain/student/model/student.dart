@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final student = studentFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';

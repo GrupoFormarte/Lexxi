@@ -3,10 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @injectable
 class LocalstorageShared {
-// Add to Shared Pref
    Future<bool?> addToSharedPref(
       {required String key, required var value}) async {
-    // Shared Pref instanse
     var sharedPref = await SharedPreferences.getInstance();
 
     switch (value.runtimeType) {
@@ -25,12 +23,8 @@ class LocalstorageShared {
     }
   }
 
-  // Read From Shared Pref
  Future<dynamic>  readFromSharedPref(String key, Type type) async {
-    // Shared Pref instanse
     var sharedPref = await SharedPreferences.getInstance();
-
-    // Read Data
     switch (type) {
       case int:
         return sharedPref.getInt(key);

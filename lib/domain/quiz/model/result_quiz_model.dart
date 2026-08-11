@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final resultQuizModel = resultQuizModelFromJson(jsonString);
-
 import 'dart:convert';
 
 ResultQuizModel resultQuizModelFromJson(String str) =>

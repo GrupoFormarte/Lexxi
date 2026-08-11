@@ -1,6 +1,3 @@
-
-
-
 import 'package:lexxi/domain/level/model/level.dart';
 
 abstract class LevelRepository {

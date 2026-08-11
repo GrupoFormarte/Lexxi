@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final asignatura = asignaturaFromJson(jsonString);
-
 import 'dart:convert';
 
 Asignatura asignaturaFromJson(String str) => Asignatura.fromJson(json.decode(str));

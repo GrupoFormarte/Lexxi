@@ -47,7 +47,4 @@ class DetallePreguntaImplement implements IPreguntaRepository {
         id: id, data: preguntaData, nameCollection: collectionName);
   }
 
-  // Future<void> deletePregunta(String id) {
-  //   // return dbCrud.delete(id: id, nameCollection: collectionName);
-  // }
 }

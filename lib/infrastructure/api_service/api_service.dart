@@ -7,15 +7,12 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class ApiService {
-  // Las URLs ahora se obtienen desde las variables de entorno
   String get baseUrl => EnvConfig.baseUrl;
   String get baseUrl2 => EnvConfig.baseUrl2;
 
   bool _tokenLoaded = false;
 
   ApiService();
-
-  /// Ensure token is loaded before making requests
   Future<void> _ensureTokenLoaded() async {
     if (!_tokenLoaded) {
       await EnvConfig.loadTokenForMongo();
@@ -106,9 +103,8 @@ print(EnvConfig.defaultHeaders);
       Uri.parse('$baseUrl/$collectionName/$id'),
       headers: EnvConfig.defaultHeaders,
     );
-    // print(EnvConfig.defaultHeaders);
     print('GETBYID -- $baseUrl/$collectionName/$id');
-print(jsonDecode(response.body));
+    print(jsonDecode(response.body));
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data'];
     } else {

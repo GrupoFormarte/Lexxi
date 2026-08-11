@@ -3,7 +3,7 @@ class PromotionModel {
   final String title;
   final String description;
   final String fileUrl;
-  final String fileType; // Nuevo campo para el tipo de archivo
+  final String fileType;
   final String buttonText;
   final DateTime startDate;
   final DateTime endDate;
@@ -19,21 +19,19 @@ class PromotionModel {
     required this.endDate,
   });
 
-  // Constructor para crear una instancia desde JSON
   factory PromotionModel.fromJson(Map<String, dynamic> json) {
     return PromotionModel(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       fileUrl: json['fileUrl'] ?? '',
-      fileType: json['fileType'] ?? 'image', // Predeterminado a 'image'
+      fileType: json['fileType'] ?? 'image', 
       buttonText: json['buttonText'] ?? '',
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
     );
   }
 
-  // Método para convertir una instancia en JSON
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
@@ -47,7 +45,6 @@ class PromotionModel {
     };
   }
 
-  // Método estático para obtener la promoción activa o una por defecto
   static PromotionModel getActivePromotion(List<dynamic> jsonList) {
     DateTime now = DateTime.now();
 
@@ -60,18 +57,16 @@ class PromotionModel {
       }
     }
 
-    // Retornar promoción por defecto si no hay ninguna activa
     return PromotionModel.defaultPromotion();
   }
 
-  // Promoción por defecto
   static PromotionModel defaultPromotion() {
     return PromotionModel(
       id: 'default',
       title: '¡No hay promociones activas!',
       description: 'Vuelve pronto para descubrir nuestras próximas ofertas.',
-      fileUrl: '', // Sin imagen ni video
-      fileType: 'none', // No hay contenido multimedia
+      fileUrl: '',
+      fileType: 'none', 
       buttonText: 'Cerrar',
       startDate: DateTime.now(),
       endDate: DateTime.now(),

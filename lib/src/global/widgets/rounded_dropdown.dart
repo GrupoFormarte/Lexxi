@@ -49,6 +49,7 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
     return Container(
       width: widget.width,
       margin: widget.margin,
+      height: 35,
       padding: EdgeInsets.symmetric(horizontal: widget.horizontal),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50.0),
@@ -63,6 +64,12 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
             isExpanded: widget.isExpanded,
             value: selectedValue,
             validator: widget.validator,
+              isDense: true,
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1,
+              color: AppColors.white,
+            ),
             hint: Text(
               widget.hintText,
               style: const TextStyle(color: AppColors.white, fontSize: 15),
@@ -104,7 +111,7 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
                 child: Text(
                   overflow: TextOverflow.ellipsis,
                   widget.itemAsString(item),
-                  style: const TextStyle(color: AppColors.white),
+                  style: const TextStyle(color: AppColors.white, fontSize: 9,),
                 ),
               );
             }).toList(),

@@ -44,6 +44,17 @@ class MockApiService extends _i1.Mock implements _i2.ApiService {
           as String);
 
   @override
+  String get baseUrl2 =>
+      (super.noSuchMethod(
+            Invocation.getter(#baseUrl2),
+            returnValue: _i3.dummyValue<String>(
+              this,
+              Invocation.getter(#baseUrl2),
+            ),
+          )
+          as String);
+
+  @override
   _i4.Future<Map<String, dynamic>?> create({
     required String? collectionName,
     required Map<String, dynamic>? data,
