@@ -3,27 +3,115 @@ import 'package:injectable/injectable.dart';
 import 'package:lexxi/aplication/auth/register/bloc/register_event.dart';
 import 'package:lexxi/aplication/auth/register/bloc/register_state.dart';
 import 'package:lexxi/aplication/auth/use_case/register_use_case.dart';
+import 'package:lexxi/domain/auth/model/register_model.dart';
+import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
 
 @injectable
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final RegisterUseCase _registerUseCase;
 
-  RegisterBloc(this._registerUseCase) : super(const RegisterInitial()) {
-    on<RegisterSubmitted>(_onRegisterSubmitted);
+  RegisterBloc(this._registerUseCase) : super(const RegisterState()) {
+    on<RegisterNameSubmitted>((event, emit) {
+      emit(state.copyWith(
+        data: state.data.copyWith(name: event.name),
+        step: state.step + 1,
+        status: RegisterStatus.idle,
+        errorMessage: null,
+      ));
+    });
+
+    on<RegisterBirthdaySubmitted>((event, emit) {
+      emit(state.copyWith(
+        data: state.data.copyWith(birthday: event.birthday),
+        step: state.step + 1,
+        errorMessage: null,
+      ));
+    });
+
+    on<RegisterLocationSubmitted>((event, emit) {
+      emit(state.copyWith(
+        data: state.data.copyWith(
+          department: event.department,
+          city: event.city,
+        ),
+        step: state.step + 1,
+        errorMessage: null,
+      ));
+    });
+
+    on<RegisterReferralSubmitted>((event, emit) {
+      emit(state.copyWith(
+        data: state.data.copyWith(
+          referralOptions: event.options,
+          referralOther: event.otherText,
+        ),
+        step: state.step + 1,
+        errorMessage: null,
+      ));
+    });
+
+    on<RegisterExamGoalSubmitted>((event, emit) {
+      emit(state.copyWith(
+        data: state.data.copyWith(examGoal: event.examGoal),
+        step: state.step + 1,
+        errorMessage: null,
+      ));
+    });
+
+    on<RegisterCredentialsSubmitted>(_onCredentialsSubmitted);
+
+    on<RegisterStepBack>((event, emit) {
+      if (state.isFirstStep) return;
+      emit(state.copyWith(
+        step: state.step - 1,
+        status: RegisterStatus.idle,
+        errorMessage: null,
+      ));
+    });
   }
 
-  Future<void> _onRegisterSubmitted(
-    RegisterSubmitted event,
+  Future<void> _onCredentialsSubmitted(
+    RegisterCredentialsSubmitted event,
     Emitter<RegisterState> emit,
   ) async {
-    emit(const RegisterLoading());
+    final data = state.data.copyWith(
+      email: event.email,
+      password: event.password,
+    );
+
+    emit(state.copyWith(
+      data: data,
+      status: RegisterStatus.loading,
+      errorMessage: null,
+    ));
 
     try {
-      await _registerUseCase(event.data);
-      emit(const RegisterSuccess());
+      final model = _buildRegisterModel(data);
+      await _registerUseCase(model);
+      emit(state.copyWith(data: data, status: RegisterStatus.success));
     } catch (e) {
-      emit(RegisterFailure(_mapError(e)));
+      emit(state.copyWith(
+        status: RegisterStatus.failure,
+        errorMessage: _mapError(e),
+      ));
     }
+  }
+
+  RegisterModel _buildRegisterModel(RegisterWizardData data) {
+    return RegisterModel.fromJson({
+      "name": data.name,
+      "email": data.email,
+      "password": data.password,
+      "birthday": data.birthday != null
+          ? "${data.birthday!.year}-${data.birthday!.month.toString().padLeft(2, '0')}-${data.birthday!.day.toString().padLeft(2, '0')}"
+          : "",
+      "local_district": data.city?.name ?? "",
+      "department": data.department?.name ?? "",
+      "how_did_you_know_us": data.referralOptions,
+      "how_did_you_know_us_other": data.referralOther,
+      "exam_goal": data.examGoal,
+      "type_user": "student",
+    });
   }
 
   String _mapError(Object e) {

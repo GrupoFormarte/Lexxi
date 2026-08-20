@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_bloc.dart';
@@ -42,15 +41,6 @@ class _LoginViewState extends State<_LoginView> {
   final FocusNode _nextFocusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    if (kDebugMode) {
-      email = "coordinacionvirtual@grupoformarte.edu.co";
-      password = "1010221676";
-    }
-  }
-
-  @override
   void dispose() {
     _currentFocusNode.dispose();
     _nextFocusNode.dispose();
@@ -74,6 +64,11 @@ class _LoginViewState extends State<_LoginView> {
                   toastDuration: const Duration(seconds: 3),
                   description: Text(state.message),
                 ).show(context);
+                Future.delayed(const Duration(seconds: 4), () {
+                  if (mounted) {
+                    setState(() => lastError = null);
+                  }
+                });
                 return;
               }
 
@@ -124,7 +119,7 @@ class _LoginViewState extends State<_LoginView> {
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                        'assets/logo_lexxi.png',
+                                        'assets/icon/logo_lexxi.png',
                                       ),
                                       fit: BoxFit.contain,
                                     ),
@@ -139,7 +134,7 @@ class _LoginViewState extends State<_LoginView> {
                                   height: 50,
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
-                                      image: AssetImage('assets/lexxi.png'),
+                                      image: AssetImage('assets/icon/lexxi.png'),
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -151,7 +146,7 @@ class _LoginViewState extends State<_LoginView> {
                               height: illustrationHeight,
                               decoration: const BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage('assets/brujita@2x-8.png'),
+                                  image: AssetImage('assets/icon/bruja-icon.png'),
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -174,6 +169,7 @@ class _LoginViewState extends State<_LoginView> {
                               style: AppTypography.bodyLarge.copyWith(
                                 color: AppColors.white,
                                 fontSize: 16,
+                                fontWeight: AppTypography.semiBold,
                               ),
                             ),
 
@@ -191,14 +187,14 @@ class _LoginViewState extends State<_LoginView> {
                               ).requestFocus(_nextFocusNode),
                             ),
 
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 20),
                             _buildLabeledField(
-                              label: 'Número de documento',
-                              hintText: '1023456789',
+                              label: 'Contraseña',
+                              hintText: 'correo123',
                               initialValue: password,
                               focusNode: _nextFocusNode,
-                              obscureText: false,
-                              keyboardType: TextInputType.number,
+                              obscureText: true,
+                              keyboardType: TextInputType.visiblePassword,
                               onChanged: (value) => password = value,
                               onSubmitted: (_) => _submit(context),
                             ),
@@ -218,6 +214,7 @@ class _LoginViewState extends State<_LoginView> {
                                 width: double.infinity,
                                 child: GradientButton(
                                   text: 'INGRESAR',
+                                  w: double.infinity,
                                   onPressed: () => _submit(context),
                                 ),
                               ),
@@ -233,8 +230,7 @@ class _LoginViewState extends State<_LoginView> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () =>
-                                        context.router.pushNamed("/signUp"),
+                                    onTap: () => context.router.pushNamed("/signUp"),
                                     child: const Text(
                                       'Crear cuenta',
                                       style: TextStyle(
@@ -303,67 +299,73 @@ class _LoginViewState extends State<_LoginView> {
     required ValueChanged<String> onChanged,
     required ValueChanged<String> onSubmitted,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: AppTypography.labelLarge.copyWith(
-            color: AppColors.white,
-            fontSize: 14,
-            fontWeight: AppTypography.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          focusNode: focusNode,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          cursorColor: AppColors.blueDark,
-          style: AppTypography.inputText.copyWith(
-            color: AppColors.blueDark,
-            fontSize: 16,
-            fontWeight: AppTypography.semiBold,
-          ),
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: AppTypography.inputHint.copyWith(
-              color: AppColors.blueDark.withOpacity(0.6),
-              fontSize: 10,
-              fontWeight: AppTypography.regular,
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
-                color: Colors.white,
-                width: 1.5,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 10,
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTypography.labelLarge.copyWith(
+              color: AppColors.white,
+              fontSize: 15,
+              fontWeight: AppTypography.bold,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 6),
+          TextField(
+            focusNode: focusNode,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            onChanged: onChanged,
+            onSubmitted: onSubmitted,
+            textAlign: TextAlign.start,
+            cursorColor: AppColors.blueDark,
+            style: AppTypography.inputText.copyWith(
+              color: AppColors.blueDark,
+              fontSize: 14,
+              fontWeight: AppTypography.semiBold,
+            ),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: AppTypography.inputHint.copyWith(
+                color: AppColors.blueDark.withOpacity(0.6),
+                fontSize: 14,
+                fontWeight: AppTypography.semiBold,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.fromLTRB(
+                22,
+                14,
+                18,
+                14,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

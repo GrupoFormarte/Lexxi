@@ -29,15 +29,18 @@ class GradientButton extends StatelessWidget {
       child: TextButton(
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         onPressed: onPressed,
         child: Text(
           text,
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
             color: Colors.white,
             decoration: TextDecoration.none,
+            fontSize: 16
           ),
         ),
       ),

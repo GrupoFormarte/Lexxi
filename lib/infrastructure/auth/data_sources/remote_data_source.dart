@@ -7,7 +7,6 @@ import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:jwt_decode_full/jwt_decode_full.dart';
-import 'package:lexxi/utils/loogers_custom.dart';
 
 @injectable
 class RemoteDataSource {
@@ -19,7 +18,7 @@ class RemoteDataSource {
   RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/auth/register');
+    final Uri url = Uri.parse('$_baseUrl/api/auth/register');
     final Map<String, String> headers = {'Content-Type': 'application/json'};
     try {
       final response = await http.post(

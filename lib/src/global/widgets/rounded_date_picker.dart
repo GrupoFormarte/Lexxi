@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
+import 'package:lexxi/src/global/design_system/color_palette.dart';
 import 'package:intl/intl.dart';
 
 class RoundedDatePicker extends StatefulWidget {
@@ -98,38 +99,38 @@ class _RoundedDatePickerState extends State<RoundedDatePicker> {
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50.0),
-            color: Colors.grey[200],
+            color: Colors.white,
           ),
           child: TextFormField(
             controller: _controller,
             readOnly: widget.isReadOnly,
             validator: widget.validator,
-            style: const TextStyle(color: AppColors.white, fontSize: 15),
+            style: TextStyle(color: ColorPalette.primary, fontSize: 15),
             textAlign: TextAlign.start,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(50.0),
-                borderSide: const BorderSide(color: Colors.white),
+                borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(50.0),
-                borderSide: const BorderSide(color: Colors.white),
+                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(50.0),
-                borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                borderSide: BorderSide(color: ColorPalette.primary, width: 2.0),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(50.0),
                 borderSide: const BorderSide(color: Colors.red),
               ),
               hintText: widget.hintText,
-              hintStyle: const TextStyle(color: AppColors.white),
-              fillColor: ColorPalette.primary,
+              hintStyle: TextStyle(color: ColorPalette.primary.withOpacity(0.4)),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-              // suffixIcon:
-              //     const Icon(Icons.calendar_today, color: AppColors.white),
+              suffixIcon: Icon(Icons.calendar_today, color: ColorPalette.primary),
             ),
           ),
         ),

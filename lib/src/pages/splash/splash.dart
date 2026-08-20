@@ -63,7 +63,7 @@ class _SplashState extends State<Splash> {
         height: 100.h,
         child: Center(
           child: Lottie.asset(
-            'assets/Comp2.json',
+            'assets/json/login.json',
             width: 250,
             repeat: true,
           ),

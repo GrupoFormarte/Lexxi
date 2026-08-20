@@ -1,29 +1,40 @@
 import 'package:equatable/equatable.dart';
+import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
 
-abstract class RegisterState extends Equatable {
-  const RegisterState();
+enum RegisterStatus { idle, loading, success, failure }
+
+class RegisterState extends Equatable {
+  final int step;
+  final RegisterWizardData data;
+  final RegisterStatus status;
+  final String? errorMessage;
+
+  const RegisterState({
+    this.step = 0,
+    this.data = const RegisterWizardData(),
+    this.status = RegisterStatus.idle,
+    this.errorMessage,
+  });
+
+  static const int totalSteps = 6;
+
+  bool get isFirstStep => step == 0;
+  bool get isLastStep => step == totalSteps - 1;
+
+  RegisterState copyWith({
+    int? step,
+    RegisterWizardData? data,
+    RegisterStatus? status,
+    String? errorMessage,
+  }) {
+    return RegisterState(
+      step: step ?? this.step,
+      data: data ?? this.data,
+      status: status ?? this.status,
+      errorMessage: errorMessage,
+    );
+  }
 
   @override
-  List<Object?> get props => [];
-}
-
-class RegisterInitial extends RegisterState {
-  const RegisterInitial();
-}
-
-class RegisterLoading extends RegisterState {
-  const RegisterLoading();
-}
-
-class RegisterSuccess extends RegisterState {
-  const RegisterSuccess();
-}
-
-class RegisterFailure extends RegisterState {
-  final String message;
-
-  const RegisterFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [step, data, status, errorMessage];
 }
