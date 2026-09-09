@@ -21,12 +21,7 @@ class StudentService {
         idStudent: user.id.toString(),
         idInstituto: user.institute.toString(),
         name: user.name,
-        secondName: user.secondName,
-        lastName: user.lastName,
-        secondLastName: user.secondLast,
-        documentTypeId: user.typeId,
         documentType: user.typeUser,
-        identificationNumber: user.numberId,
         email: user.email,
         cellphone: user.cellphone,
         grados: grados);

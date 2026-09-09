@@ -1,23 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lexxi/domain/auth/model/register_model.dart';
+import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
+import 'package:lexxi/domain/item_dynamic/model/item.dart';
 
 void main() {
   group('RegisterModel Tests', () {
     test('fromJson debe crear instancia válida', () {
       // Arrange
       final json = {
-        'type_id': 1,
-        'number_id': '123456789',
         'name': 'Juan',
-        'second_name': 'Carlos',
-        'last_name': 'Pérez',
-        'second_last': 'González',
-        'email': 'juan@example.com',
-        'cellpone': '3001234567',
-        'local_district': 'Bogotá',
-        'gender': 'M',
         'birthday': '1990-01-01',
-        'programa': 'Ingeniería',
+        'department': 'Cundinamarca',
+        'local_district': 'Bogotá',
+        'how_did_you_know_us': ['Instagram', 'Un amigo'],
+        'how_did_you_know_us_other': '',
+        'exam_goal': 'saber11',
+        'email': 'juan@example.com',
+        'password': '123456',
         'type_user': 'student',
       };
 
@@ -25,40 +24,33 @@ void main() {
       final register = RegisterModel.fromJson(json);
 
       // Assert
-      expect(register.typeId, 1);
-      expect(register.numberId, '123456789');
       expect(register.name, 'Juan');
-      expect(register.secondName, 'Carlos');
-      expect(register.lastName, 'Pérez');
-      expect(register.secondLast, 'González');
-      expect(register.email, 'juan@example.com');
-      expect(register.cellpone, '3001234567');
-      expect(register.localDistrict, 'Bogotá');
-      expect(register.gender, 'M');
       expect(register.birthday, '1990-01-01');
-      expect(register.programa, 'Ingeniería');
+      expect(register.department, 'Cundinamarca');
+      expect(register.localDistrict, 'Bogotá');
+      expect(register.howDidYouKnowUs, ['Instagram', 'Un amigo']);
+      expect(register.howDidYouKnowUsOther, '');
+      expect(register.examGoal, 'saber11');
+      expect(register.email, 'juan@example.com');
+      expect(register.password, '123456');
       expect(register.typeUser, 'student');
     });
 
-    test('fromJson debe manejar enroll', () {
+    test('fromJson debe usar "student" por defecto si no viene type_user', () {
       // Arrange
       final json = {
         'name': 'María',
         'email': 'maria@example.com',
-        'enroll': {
-          'program_id': 5,
-        }
       };
 
       // Act
       final register = RegisterModel.fromJson(json);
 
       // Assert
-      expect(register.enroll, isNotNull);
-      expect(register.enroll!.programId, 5);
+      expect(register.typeUser, 'student');
     });
 
-    test('fromJson debe manejar enroll nulo', () {
+    test('fromJson debe manejar how_did_you_know_us nulo', () {
       // Arrange
       final json = {
         'name': 'Pedro',
@@ -69,85 +61,118 @@ void main() {
       final register = RegisterModel.fromJson(json);
 
       // Assert
-      expect(register.enroll, isNull);
+      expect(register.howDidYouKnowUs, isNull);
     });
 
-    test('toJson debe convertir correctamente', () {
+    test('fromWizard debe mapear todos los campos del wizard', () {
       // Arrange
-      final register = RegisterModel(
-        typeId: 2,
-        numberId: '987654321',
+      final department = Item(name: 'Cundinamarca', codeDep: '25');
+      final city = Item(name: 'Bogotá', codeDep: '25');
+      final wizardData = RegisterWizardData(
         name: 'Ana',
-        secondName: 'María',
-        lastName: 'López',
+        birthday: DateTime(2000, 5, 9),
+        department: department,
+        city: city,
+        referralOptions: const ['Instagram', 'TikTok'],
+        referralOther: 'Radio',
+        examGoal: 'saber_pro',
         email: 'ana@example.com',
-        cellpone: '3009876543',
-        typeUser: 'teacher',
+        password: '123456',
       );
 
       // Act
-      final json = register.toJson();
+      final register = RegisterModel.fromWizard(wizardData);
 
       // Assert
-      expect(json['type_id'], 2);
-      expect(json['number_id'], '987654321');
-      expect(json['name'], 'Ana');
-      expect(json['second_name'], 'María');
-      expect(json['last_name'], 'López');
-      expect(json['email'], 'ana@example.com');
-      expect(json['cellphone'], '3009876543');
-      expect(json['type_user'], 'teacher');
+      expect(register.name, 'Ana');
+      expect(register.birthday, '2000-05-09');
+      expect(register.department, 'Cundinamarca');
+      expect(register.localDistrict, 'Bogotá');
+      expect(register.howDidYouKnowUs, ['Instagram', 'TikTok']);
+      expect(register.howDidYouKnowUsOther, 'Radio');
+      expect(register.examGoal, 'saber_pro');
+      expect(register.email, 'ana@example.com');
+      expect(register.password, '123456');
+      expect(register.typeUser, 'student');
     });
 
-    test('toJson debe incluir enroll cuando existe', () {
-      // Arrange
-      final enroll = Enroll(programId: 3);
-      final register = RegisterModel(
-        name: 'Luis',
-        email: 'luis@example.com',
-        enroll: enroll,
+    test('fromWizard debe manejar campos opcionales vacíos', () {
+      const wizardData = RegisterWizardData(
+        name: 'Ana',
+        email: 'ana@example.com',
+        password: '123456',
       );
 
       // Act
-      final json = register.toJson();
+      final register = RegisterModel.fromWizard(wizardData);
 
       // Assert
-      expect(json['enroll'], isNotNull);
-      expect(json['enroll']['program_id'], 3);
-    });
-  });
-
-  group('Enroll Tests', () {
-    test('fromJson debe crear instancia válida', () {
-      // Arrange
-      final json = {
-        'program_id': 7,
-      };
-
-      // Act
-      final enroll = Enroll.fromJson(json);
-
-      // Assert
-      expect(enroll.programId, 7);
+      expect(register.birthday, '');
+      expect(register.department, '');
+      expect(register.localDistrict, '');
+      expect(register.typeUser, 'student');
     });
 
     test('toJson debe convertir correctamente', () {
       // Arrange
-      final enroll = Enroll(programId: 9);
+      final register = RegisterModel(
+        name: 'Ana',
+        birthday: '1999-03-20',
+        department: 'Antioquia',
+        localDistrict: 'Medellín',
+        howDidYouKnowUs: const ['Google'],
+        howDidYouKnowUsOther: '',
+        examGoal: 'saber_tyt',
+        email: 'ana@example.com',
+        password: 'secreta123',
+        typeUser: 'student',
+      );
 
       // Act
-      final json = enroll.toJson();
+      final json = register.toJson();
 
       // Assert
-      expect(json['program_id'], 9);
+      expect(json['name'], 'Ana');
+      expect(json['birthday'], '1999-03-20');
+      expect(json['department'], 'Antioquia');
+      expect(json['localDistrict'], 'Medellín');
+      expect(json['howDidYouKnowUs'], ['Google']);
+      expect(json['howDidYouKnowUsOther'], '');
+      expect(json['examGoal'], 'saber_tyt');
+      expect(json['email'], 'ana@example.com');
+      expect(json['password'], 'secreta123');
+      expect(json['typeUser'], 'student');
     });
 
-    test('debe crear instancia con constructor', () {
-      // Arrange & Act
-      final enroll = Enroll(programId: 4);
+    test('toJson -> fromJson debe hacer round-trip sin perder datos', () {
+      // Arrange
+      final original = RegisterModel(
+        name: 'Luis',
+        birthday: '1995-07-15',
+        department: 'Valle',
+        localDistrict: 'Cali',
+        howDidYouKnowUs: const ['Facebook', 'Colegio'],
+        howDidYouKnowUsOther: 'Feria universitaria',
+        examGoal: 'saber11',
+        email: 'luis@example.com',
+        password: 'abcdef',
+        typeUser: 'student',
+      );
+
+      // Act
+      final roundTripped = RegisterModel.fromJson(original.toJson());
 
       // Assert
-      expect(enroll.programId, 4);
+      expect(roundTripped.name, original.name);
+      expect(roundTripped.birthday, original.birthday);
+      expect(roundTripped.department, original.department);
+      expect(roundTripped.localDistrict, original.localDistrict);
+      expect(roundTripped.howDidYouKnowUs, original.howDidYouKnowUs);
+      expect(roundTripped.howDidYouKnowUsOther, original.howDidYouKnowUsOther);
+      expect(roundTripped.examGoal, original.examGoal);
+      expect(roundTripped.email, original.email);
+      expect(roundTripped.password, original.password);
+      expect(roundTripped.typeUser, original.typeUser);
     });
   });
 }

@@ -98,20 +98,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   }
 
   RegisterModel _buildRegisterModel(RegisterWizardData data) {
-    return RegisterModel.fromJson({
-      "name": data.name,
-      "email": data.email,
-      "password": data.password,
-      "birthday": data.birthday != null
-          ? "${data.birthday!.year}-${data.birthday!.month.toString().padLeft(2, '0')}-${data.birthday!.day.toString().padLeft(2, '0')}"
-          : "",
-      "local_district": data.city?.name ?? "",
-      "department": data.department?.name ?? "",
-      "how_did_you_know_us": data.referralOptions,
-      "how_did_you_know_us_other": data.referralOther,
-      "exam_goal": data.examGoal,
-      "type_user": "student",
-    });
+    return RegisterModel.fromWizard(data);
   }
 
   String _mapError(Object e) {

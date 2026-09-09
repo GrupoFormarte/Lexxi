@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lexxi/domain/auth/model/login_type.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 
 abstract class LoginState extends Equatable {
@@ -18,13 +19,16 @@ class LoginLoading extends LoginState {
 
 class LoginSuccess extends LoginState {
   final User user;
+  final LoginType type;
 
-  const LoginSuccess(this.user);
+  const LoginSuccess(
+    this.user,
+    this.type,
+  );
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => [user, type];
 }
-
 class LoginFailure extends LoginState {
   final String message;
 

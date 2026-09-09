@@ -125,7 +125,6 @@ class _HomeState extends State<Home> {
       }
 
       await _studentService.create(grados);
-      // Obtener la información del estudiante después de la creación
       student = await _studentService.getInfo();
       if (student == null) {
         _showError(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_bloc.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_event.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_state.dart';
+import 'package:lexxi/domain/auth/model/login_type.dart';
 import 'package:lexxi/injection.dart';
 import 'package:lexxi/src/global/colors_custom.dart';
 import 'package:lexxi/src/global/design_system/typography.dart';
@@ -77,10 +78,11 @@ class _LoginViewState extends State<_LoginView> {
 
                 context.read<DataUserProvider>().userViewModel = state.user;
 
-                if (state.user.typeUser == 'student') {
+                if (state.type == LoginType.normal) {
                   context.router.replaceNamed('/all_programs');
                   return;
                 }
+
                 context.router.replaceNamed('/home');
               }
             },
@@ -134,7 +136,9 @@ class _LoginViewState extends State<_LoginView> {
                                   height: 50,
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
-                                      image: AssetImage('assets/icon/lexxi.png'),
+                                      image: AssetImage(
+                                        'assets/icon/lexxi.png',
+                                      ),
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -146,7 +150,9 @@ class _LoginViewState extends State<_LoginView> {
                               height: illustrationHeight,
                               decoration: const BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage('assets/icon/bruja-icon.png'),
+                                  image: AssetImage(
+                                    'assets/icon/bruja-icon.png',
+                                  ),
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -230,7 +236,8 @@ class _LoginViewState extends State<_LoginView> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => context.router.pushNamed("/signUp"),
+                                    onTap: () =>
+                                        context.router.pushNamed("/signUp"),
                                     child: const Text(
                                       'Crear cuenta',
                                       style: TextStyle(
@@ -337,31 +344,17 @@ class _LoginViewState extends State<_LoginView> {
               fillColor: Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(
-                  color: Colors.white,
-                  width: 1,
-                ),
+                borderSide: const BorderSide(color: Colors.white, width: 1),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(
-                  color: Colors.white,
-                  width: 1,
-                ),
+                borderSide: const BorderSide(color: Colors.white, width: 1),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(
-                  color: Colors.white,
-                  width: 1.5,
-                ),
+                borderSide: const BorderSide(color: Colors.white, width: 1.5),
               ),
-              contentPadding: const EdgeInsets.fromLTRB(
-                22,
-                14,
-                18,
-                14,
-              ),
+              contentPadding: const EdgeInsets.fromLTRB(22, 14, 18, 14),
             ),
           ),
         ],
@@ -371,7 +364,7 @@ class _LoginViewState extends State<_LoginView> {
 
   void _submit(BuildContext context) {
     context.read<LoginBloc>().add(
-      LoginSubmitted(email: email, password: password),
+      LoginSubmitted(email: email, password: password, type: LoginType.normal),
     );
   }
 }

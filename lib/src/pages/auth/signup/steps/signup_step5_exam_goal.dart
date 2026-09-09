@@ -29,17 +29,17 @@ class _SignupStep5ExamGoalState extends State<SignupStep5ExamGoal> {
     ExamGoalOption(
       id: 'saber11',
       imageAsset: 'assets/icon/pre-saber.png',
-      label: 'Saber 11',
+      label: 'Prepárate para el exámen de estado.',
     ),
     ExamGoalOption(
       id: 'preUnal',
       imageAsset: 'assets/icon/pre-unal.png',
-      label: 'Pre-UNAL',
+      label: 'Entrana para el examen de admisión de la UNAL.',
     ),
     ExamGoalOption(
       id: 'preUdea',
       imageAsset: 'assets/icon/pre-udea.png',
-      label: 'Pre-UDEA',
+      label: 'Domina el examen de ingreso de la UDEA.',
     ),
   ];
 
@@ -60,9 +60,7 @@ class _SignupStep5ExamGoalState extends State<SignupStep5ExamGoal> {
 
     setState(() => _error = null);
 
-    context
-        .read<RegisterBloc>()
-        .add(RegisterExamGoalSubmitted(_selectedId!));
+    context.read<RegisterBloc>().add(RegisterExamGoalSubmitted(_selectedId!));
   }
 
   @override
@@ -70,25 +68,21 @@ class _SignupStep5ExamGoalState extends State<SignupStep5ExamGoal> {
     return SignupStepScaffold(
       currentStep: 4,
       totalSteps: 6,
-      subtitle: '¿Cuál examen quieres conquistar?',
+      subtitle: '¿Cuál exámen quieres conquistar?',
       onContinue: _continue,
-      onBack: () => context
-          .read<RegisterBloc>()
-          .add(const RegisterStepBack()),
+      onBack: () => context.read<RegisterBloc>().add(const RegisterStepBack()),
       errorMessage: _error,
       content: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: _options
             .map(
               (option) => Padding(
-                padding: const EdgeInsets.only(bottom: 2),
+                padding: const EdgeInsets.only(bottom: 4),
                 child: SelectableImageCard(
                   imageAsset: option.imageAsset,
                   label: option.label,
                   selected: _selectedId == option.id,
-                  onTap: () => setState(
-                    () => _selectedId = option.id,
-                  ),
+                  onTap: () => setState(() => _selectedId = option.id),
                 ),
               ),
             )

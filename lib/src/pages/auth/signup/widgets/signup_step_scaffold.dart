@@ -9,7 +9,10 @@ class SignupStepScaffold extends StatelessWidget {
   final String? subtitle;
   final String? description;
   final Widget content;
+  final Widget? checkContent;
   final String continueLabel;
+  final bool checkValue;
+  final ValueChanged<bool?>? onCheckChanged;
   final VoidCallback? onContinue;
   final VoidCallback? onBack;
   final bool isLoading;
@@ -29,6 +32,9 @@ class SignupStepScaffold extends StatelessWidget {
     this.continueLabel = 'Continuar',
     this.onContinue,
     this.onBack,
+    this.checkContent,
+    this.checkValue = false,
+    this.onCheckChanged,
     this.isLoading = false,
     this.errorMessage,
   });
@@ -45,8 +51,6 @@ class SignupStepScaffold extends StatelessWidget {
               totalSteps: totalSteps,
               onBack: onBack,
             ),
-
-            const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -82,7 +86,6 @@ class SignupStepScaffold extends StatelessWidget {
                         ),
                       ),
                     ],
-
                     content,
                     if (description != null) ...[
                       const SizedBox(height: 5),
@@ -92,6 +95,21 @@ class SignupStepScaffold extends StatelessWidget {
                         style: AppTypography.bodyMediumItalic.copyWith(
                           color: Colors.white.withOpacity(0.8),
                         ),
+                      ),
+                    ],
+                    if (checkContent != null) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: checkValue,
+                            onChanged: onCheckChanged,
+                            activeColor: Colors.white,
+                            checkColor: Colors.black,
+                          ),
+                          Expanded(child: checkContent!),
+                        ],
                       ),
                     ],
                     if (errorMessage != null) ...[

@@ -45,7 +45,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
   final _studentService = getIt.get<StudentService>();
   final UploadImageUseCase _uploadImageUseCase =
       getIt.get<UploadImageUseCase>();
-  final ValueNotifier<Config?> _configNotifier = ValueNotifier(null);
   final ValueNotifier<Student?> _studentNotifier = ValueNotifier(null);
   String password = '', newPassword = '';
   String time = "";
@@ -515,7 +514,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
             lastName: currentUser.lastName,
             secondLast: currentUser.secondLast,
             typeId: currentUser.typeId,
-            numberId: currentUser.numberId,
             email: currentUser.email,
             gender: currentUser.gender,
             phone: currentUser.phone,

@@ -1,90 +1,84 @@
-import 'enroll.dart';
-
 class RegisterModel {
-  int? typeId;
-  String? numberId;
+  static const int defaultTypeId = 4;
   String? name;
-  String? secondName;
-  String? lastName;
-  String? secondLast;
   String? email;
   String? password;
-  String? cellpone;
-  String? localDistrict;
-  String? department;
-  String? gender;
-  String? birthday;
-  String? programa;
   String? typeUser;
+  String? birthday;
+  String? department;
+  String? localDistrict;
   List<String>? howDidYouKnowUs;
   String? howDidYouKnowUsOther;
   String? examGoal;
-  Enroll? enroll;
 
-  RegisterModel(
-      {this.typeId,
-      this.numberId,
-      this.name,
-      this.secondName,
-      this.lastName,
-      this.secondLast,
-      this.email,
-      this.password,
-      this.cellpone,
-      this.localDistrict,
-      this.department,
-      this.gender,
-      this.birthday,
-      this.typeUser,
-      this.enroll,
-      this.howDidYouKnowUs,
-      this.howDidYouKnowUsOther,
-      this.examGoal,
-      this.programa});
+  RegisterModel({
+    this.name,
+    this.birthday,
+    this.department,
+    this.localDistrict,
+    this.howDidYouKnowUs,
+    this.howDidYouKnowUsOther,
+    this.examGoal,
+    this.email,
+    this.password,
+    this.typeUser,
+  });
 
-  factory RegisterModel.fromJson(Map<String, dynamic> json) => RegisterModel(
-        typeId: json["type_id"],
-        numberId: json["number_id"],
-        name: json["name"],
-        secondName: json["second_name"],
-        lastName: json["last_name"],
-        secondLast: json["second_last"],
-        email: json["email"],
-        password: json["password"],
-        cellpone: json["cellpone"],
-        localDistrict: json["local_district"],
-        department: json["department"],
-        gender: json["gender"],
-        birthday: json["birthday"],
-        programa: json["programa"],
-        typeUser: json["type_user"],
-        howDidYouKnowUs: json["how_did_you_know_us"] == null
-            ? null
-            : List<String>.from(json["how_did_you_know_us"]),
-        howDidYouKnowUsOther: json["how_did_you_know_us_other"],
-        examGoal: json["exam_goal"],
-        enroll: json["enroll"] == null ? null : Enroll.fromJson(json["enroll"]),
-      );
+  factory RegisterModel.fromJson(Map<String, dynamic> json) {
+    final referralOptions =
+        json["howDidYouKnowUs"] ?? json["how_did_you_know_us"];
+
+    return RegisterModel(
+      name: json["name"]?.toString(),
+      birthday: json["birthday"]?.toString(),
+      department: json["department"]?.toString(),
+      localDistrict: (json["localDistrict"] ?? json["local_district"])
+          ?.toString(),
+      howDidYouKnowUs: referralOptions is List
+          ? referralOptions
+                .where((value) => value != null)
+                .map((value) => value.toString())
+                .toList()
+          : null,
+      howDidYouKnowUsOther:
+          (json["howDidYouKnowUsOther"] ?? json["how_did_you_know_us_other"])
+              ?.toString(),
+      examGoal: (json["examGoal"] ?? json["exam_goal"])?.toString(),
+      email: json["email"]?.toString(),
+      password: json["password"]?.toString(),
+      typeUser: (json["typeUser"] ?? json["type_user"] ?? 'student').toString(),
+    );
+  }
+
+  factory RegisterModel.fromWizard(dynamic data) {
+    final birthday = data.birthday != null
+        ? "${data.birthday!.year}-${data.birthday!.month.toString().padLeft(2, '0')}-${data.birthday!.day.toString().padLeft(2, '0')}"
+        : '';
+
+    return RegisterModel(
+      name: data.name,
+      birthday: birthday,
+      department: data.department?.name ?? '',
+      localDistrict: data.city?.name ?? '',
+      howDidYouKnowUs: data.referralOptions,
+      howDidYouKnowUsOther: data.referralOther,
+      examGoal: data.examGoal,
+      email: data.email,
+      password: data.password,
+      typeUser: 'Student',
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "type_id": typeId,
-        "number_id": numberId,
-        "name": name,
-        "second_name": secondName,
-        "last_name": lastName,
-        "second_last": secondLast,
-        "email": email,
-        "password": password,
-        "cellpone": cellpone,
-        "local_district": localDistrict,
-        "department": department,
-        "gender": gender,
-        "birthday": birthday,
-        "programa": programa,
-        "type_user": typeUser,
-        "how_did_you_know_us": howDidYouKnowUs,
-        "how_did_you_know_us_other": howDidYouKnowUsOther,
-        "exam_goal": examGoal,
-        "enroll": enroll?.toJson(),
-      };
+    "name": name,
+    "birthday": birthday,
+    "department": department,
+    "localDistrict": localDistrict,
+    "howDidYouKnowUs": howDidYouKnowUs,
+    "howDidYouKnowUsOther": howDidYouKnowUsOther,
+    "examGoal": examGoal,
+    "email": email,
+    "password": password,
+    "typeUser": typeUser,
+  };
 }

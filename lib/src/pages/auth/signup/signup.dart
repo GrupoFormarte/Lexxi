@@ -11,7 +11,6 @@ import 'package:lexxi/src/pages/auth/signup/steps/signup_step3_location.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step4_referral.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step5_exam_goal.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step6_credentials.dart';
-import 'package:lexxi/src/routes/routes_import.dart';
 
 @RoutePage()
 class SignUp extends StatelessWidget {
@@ -53,7 +52,7 @@ class _SignUpWizard extends StatelessWidget {
               previous.status != current.status,
           listener: (context, state) {
             if (state.status == RegisterStatus.success) {
-              context.router.replace(const HomeRoute());
+              context.router.pushNamed('/signup-success');
             }
           },
           builder: (context, state) {

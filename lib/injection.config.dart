@@ -16,6 +16,7 @@ import 'aplication/academic_level/academic_level_use_case.dart' as _i998;
 import 'aplication/asignatura/service/asignatura_service.dart' as _i515;
 import 'aplication/auth/login/bloc/login_bloc.dart' as _i233;
 import 'aplication/auth/register/bloc/register_bloc.dart' as _i481;
+import 'aplication/auth/register/location/location_cubit.dart' as _i519;
 import 'aplication/auth/service/auth_service.dart' as _i678;
 import 'aplication/auth/use_case/login_use_case.dart' as _i1027;
 import 'aplication/auth/use_case/register_use_case.dart' as _i977;
@@ -151,6 +152,9 @@ _i174.GetIt initGetIt(
   gh.factory<_i233.LoginBloc>(() => _i233.LoginBloc(gh<_i1027.LoginUseCase>()));
   gh.factory<_i483.ItemDynamicUseCase>(
     () => _i483.ItemDynamicUseCase(gh<_i345.IItemRepository>()),
+  );
+  gh.factory<_i519.LocationCubit>(
+    () => _i519.LocationCubit(gh<_i483.ItemDynamicUseCase>()),
   );
   return getIt;
 }

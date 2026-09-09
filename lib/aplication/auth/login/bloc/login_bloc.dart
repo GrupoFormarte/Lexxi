@@ -11,7 +11,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc(this._loginUseCase) : super(const LoginInitial()) {
     on<LoginSubmitted>(_onLoginSubmitted);
-    on<LoginReset>((event, emit) => emit(const LoginInitial()));
+
+    on<LoginReset>((event, emit) {
+      emit(const LoginInitial());
+    });
   }
 
   Future<void> _onLoginSubmitted(
@@ -21,22 +24,36 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(const LoginLoading());
 
     try {
-      final loginModel = LoginModel(event.email, event.password);
+      final loginModel = LoginModel(event.email.trim(), event.password);
 
       if (!loginModel.isValid()) {
-        emit(const LoginFailure('Faltan campos por llenar'));
+        emit(const LoginFailure('Correo o contraseña inválidos'));
         return;
       }
 
-      final user = await _loginUseCase(loginModel);
+      print('================================');
+      print('LOGIN');
+      print('Tipo: ${event.type}');
+      print('Email: ${event.email}');
+      print('================================');
+
+      final user = await _loginUseCase(loginModel, type: event.type);
 
       if (user == null) {
         emit(const LoginFailure('Correo o contraseña incorrectos'));
         return;
       }
 
-      emit(LoginSuccess(user));
-    } catch (e) {
+      print('LOGIN EXITOSO');
+      print('Usuario: ${user.email}');
+      print('Tipo usuario: ${user.typeUser}');
+      print('Tiene token: ${user.token != null}');
+
+      emit(LoginSuccess(user, user.loginType ?? event.type));
+    } catch (e, stackTrace) {
+      print('ERROR LOGIN: $e');
+      print(stackTrace);
+
       emit(LoginFailure(e.toString()));
     }
   }

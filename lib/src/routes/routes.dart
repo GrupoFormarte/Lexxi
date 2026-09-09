@@ -22,6 +22,8 @@ class AppRouter extends $AppRouter {
         AutoRoute(
           page: ConfigScreenRoute.page,
           path: '/config',
-        )
+        ),
+        AutoRoute(page: HomeRoute.page, path: '/home'),
+        AutoRoute(page: HomeRoute.page, path: '/home'),
       ];
 }

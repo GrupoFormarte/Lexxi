@@ -7,8 +7,7 @@ class RegisterWizardData {
   final Item? city;
   final List<String> referralOptions;
   final String referralOther;
-  final String? examGoal;
-
+  final String? examGoal; 
   final String email;
   final String password;
 

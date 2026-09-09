@@ -33,7 +33,7 @@ void main() {
           .thenAnswer((_) async => expectedUser);
 
       // Act
-      final result = await loginUseCase.execute(loginModel);
+      final result = await loginUseCase.call(loginModel);
 
       // Assert
       expect(result, isNotNull);
@@ -50,7 +50,7 @@ void main() {
           .thenThrow(Exception('Authentication failed'));
 
       // Act
-      final result = await loginUseCase.execute(loginModel);
+      final result = await loginUseCase.call(loginModel);
 
       // Assert
       expect(result, isNull);
@@ -65,7 +65,7 @@ void main() {
           .thenThrow(Exception('Network error'));
 
       // Act
-      final result = await loginUseCase.execute(loginModel);
+      final result = await loginUseCase.call(loginModel);
 
       // Assert
       expect(result, isNull);
@@ -81,7 +81,7 @@ void main() {
           .thenAnswer((_) async => expectedUser);
 
       // Act
-      await loginUseCase.execute(loginModel);
+      await loginUseCase.call(loginModel);
 
       // Assert
       verify(mockLoginRepository.auth(argThat(

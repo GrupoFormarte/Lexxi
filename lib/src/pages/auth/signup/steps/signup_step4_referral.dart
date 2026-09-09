@@ -13,7 +13,6 @@ class SignupStep4Referral extends StatefulWidget {
 }
 
 class _SignupStep4ReferralState extends State<SignupStep4Referral> {
-  // ⚠️ Ajusta estas 6 opciones a las reales de tu diseño.
   static const List<String> _options = [
     'Instagram',
     'Facebook',

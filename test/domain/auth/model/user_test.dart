@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lexxi/domain/auth/model/login_type.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 
 void main() {
@@ -60,6 +61,18 @@ void main() {
       expect(json['email'], equals('juan@test.com'));
       expect(json['token'], equals('test_token'));
       expect(json['active'], equals(1));
+    });
+
+    test('User debe conservar el tipo de login SAF al serializar', () {
+      final user = User(
+        id: 1,
+        email: 'saf@test.com',
+        loginType: LoginType.saf,
+      );
+
+      final restoredUser = User.fromJson(user.toJson());
+
+      expect(restoredUser.loginType, equals(LoginType.saf));
     });
 
     test('User.fromJson debe manejar _id alternativo', () {
