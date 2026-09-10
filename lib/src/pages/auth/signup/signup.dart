@@ -11,6 +11,7 @@ import 'package:lexxi/src/pages/auth/signup/steps/signup_step3_location.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step4_referral.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step5_exam_goal.dart';
 import 'package:lexxi/src/pages/auth/signup/steps/signup_step6_credentials.dart';
+import 'package:lexxi/src/pages/auth/signup/widgets/signup_loading_overlay.dart';
 
 @RoutePage()
 class SignUp extends StatelessWidget {
@@ -48,14 +49,16 @@ class _SignUpWizard extends StatelessWidget {
           gradient: ColorPalette.gradientBlueBackground,
         ),
         child: BlocConsumer<RegisterBloc, RegisterState>(
-          listenWhen: (previous, current) =>
-              previous.status != current.status,
+          listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status == RegisterStatus.success) {
-              context.router.pushNamed('/signup-success');
+              context.router.replaceNamed('/login');
             }
           },
           builder: (context, state) {
+            if (state.status == RegisterStatus.loading) {
+              return const SignupLoadingOverlay();
+            }
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               child: KeyedSubtree(

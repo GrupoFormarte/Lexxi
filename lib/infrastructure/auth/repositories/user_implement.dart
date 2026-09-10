@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
 import 'package:lexxi/domain/auth/model/register_model.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
@@ -23,31 +23,33 @@ class UserImplement implements LoginRepository {
   @override
   Future<User?> auth(LoginModel login) async {
     try {
-      print('[UserImplement.auth] Iniciando login normal');
-
-      final userData = await _remoteDataSource.login(
-        login.toJson(),
-      );
+      final userData = await _remoteDataSource.login(login.toJson());
 
       return await _processLoginResponse(userData);
+    } on NormalLoginFailedException catch (e) {
+      logger.w('Login normal falló (${e.message}), probando SAF...');
+
+      try {
+        final safUserData = await _remoteDataSource.loginSaf(
+          login.toSafJson(),
+        );
+
+        return await _processLoginResponse(safUserData);
+      } catch (safError) {
+        logger.e('Fallback SAF también falló: $safError');
+        throw UserException(e.message);
+      }
     } catch (e, stackTrace) {
-      print('[UserImplement.auth] ERROR: $e');
-      print('[UserImplement.auth] StackTrace: $stackTrace');
+      logger.e('Error en UserImplement auth: $e\n$stackTrace');
 
-      logger.e(
-        'Error en UserImplement auth: $e',
-      );
-
-      throw UserException(
-        e.toString(),
-      );
+      throw UserException(e.toString());
     }
   }
 
   @override
   Future<User?> authSaf(LoginModel login) async {
     try {
-      print('[UserImplement.authSaf] Iniciando login SAF');
+      logger.d('Iniciando login SAF');
 
       final userData = await _remoteDataSource.loginSaf(
         login.toSafJson(),
@@ -55,16 +57,10 @@ class UserImplement implements LoginRepository {
 
       return await _processLoginResponse(userData);
     } catch (e, stackTrace) {
-      print('[UserImplement.authSaf] ERROR: $e');
-      print('[UserImplement.authSaf] StackTrace: $stackTrace');
+      logger.e('Error en UserImplement authSaf: $e\n$stackTrace');
 
-      logger.e(
-        'Error en UserImplement authSaf: $e',
-      );
-
-      throw UserException(
-        e.toString(),
-      );
+      if (e is UserException) rethrow;
+      throw UserException(e.toString());
     }
   }
 
@@ -73,68 +69,18 @@ class UserImplement implements LoginRepository {
     Map<String, dynamic>? userData,
   ) async {
     if (userData == null) {
-      print(
-        '[UserImplement] userData es null',
-      );
-
       return null;
     }
-
-    print(
-      '[UserImplement] userData recibido: $userData',
-    );
-
-    // ----------------------------------------------------------
-    // GRADOS
-    // ----------------------------------------------------------
-
-    userData['grado'] = [
-      {
-        "programName": "Preuniversitario UdeA",
-        "programCode": "PUA",
-        "shortName": "Pre Udea",
-        "colecction": null,
-        "id": "668d39d63abc9ff60a7979d2"
-      },
-      {
-        "programName": "Preuniversitario Unal",
-        "programCode": "PUN",
-        "shortName": "Pre Unal",
-        "colecction": null,
-        "id": "668d39d63abc9ff60a7979d4"
-      },
-      {
-        "programName": "Pre Saber",
-        "programCode": "PSB",
-        "shortName": "Pre Saber",
-        "colecction": null,
-        "id": "668d39d63abc9ff60a7979d6"
-      }
-    ];
-
-    print(
-      '[UserImplement] userData después de agregar grados: $userData',
-    );
-
 
     await _localstorageShared.addToSharedPref(
       key: 'user',
       value: json.encode(userData),
     );
 
-
-    print(
-      '[UserImplement] Llamando a User.fromJson',
-    );
-
     final user = User.fromJson(userData);
 
-    print(
-      '[UserImplement] Usuario creado exitosamente: ${user.email}',
-    );
-
-    print(
-      '[UserImplement] Token: ${user.token != null ? 'EXISTE' : 'NO EXISTE'}',
+    logger.d(
+      'Usuario autenticado: ${user.email} (token: ${user.token != null})',
     );
 
     return user;
@@ -144,20 +90,13 @@ class UserImplement implements LoginRepository {
   @override
   Future<User?> getUserLocal() async {
     try {
-      print(
-        '[UserImplement.getUserLocal] Buscando usuario local',
-      );
-
       final data = await _localstorageShared.readFromSharedPref(
         'user',
         String,
       );
 
       if (data == null) {
-        print(
-          '[UserImplement.getUserLocal] No existe usuario local',
-        );
-
+        logger.d('No hay usuario local guardado');
         return null;
       }
 
@@ -165,17 +104,11 @@ class UserImplement implements LoginRepository {
 
       final user = User.fromJson(userData);
 
-      print(
-        '[UserImplement.getUserLocal] Usuario encontrado: ${user.email}',
-      );
+      logger.d('Usuario local encontrado (id: ${user.id})');
 
       return user;
     } catch (e, stackTrace) {
-      print(
-        '[UserImplement.getUserLocal] ERROR: $e',
-      );
-
-      print(stackTrace);
+      logger.e('Error en UserImplement getUserLocal: $e\n$stackTrace');
 
       throw UserException(
         e.toString(),
@@ -211,35 +144,30 @@ class UserImplement implements LoginRepository {
         value: json.encode(userData),
       );
 
+      logger.d('Perfil actualizado (id: ${u.id}, grados: ${u.grado?.length})');
+
       return u;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.e('Error en UserImplement getInfoUser: $e\n$stackTrace');
+
       await _localstorageShared.deleteFromSharedPref(
         'user',
       );
 
+      if (e is UserException) rethrow;
       throw UserException(
         e.toString(),
       );
     }
   }
 
-  // ============================================================
-  // LOGOUT
-  // ============================================================
-
   @override
   Future<void> logout() async {
-    print(
-      '[UserImplement.logout] Cerrando sesión',
-    );
-
     await _localstorageShared.deleteFromSharedPref(
       'user',
     );
 
-    print(
-      '[UserImplement.logout] Usuario local eliminado',
-    );
+    logger.d('Sesión cerrada');
   }
 
   @override
@@ -253,8 +181,6 @@ class UserImplement implements LoginRepository {
     );
 
     final userData = json.decode(data);
-
-    print(userData);
 
     final user = User.fromJson(userData);
 
@@ -276,14 +202,16 @@ class UserImplement implements LoginRepository {
       );
 
       if (responRegister["error"] ?? false) {
-        throw responRegister['message'];
+        throw UserException(
+          responRegister['message']?.toString() ?? 'Error al registrar usuario',
+        );
       }
-
-      return responRegister;
+    } on UserException catch (e) {
+      logger.e('Error en UserImplement registerUser: ${e.message}');
+      rethrow;
     } catch (e) {
-      logger.e('$e');
-
-      throw e.toString();
+      logger.e('Error en UserImplement registerUser: $e');
+      throw UserException(e.toString());
     }
   }
 }

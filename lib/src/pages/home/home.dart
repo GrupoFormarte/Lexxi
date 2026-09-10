@@ -175,8 +175,14 @@ class _HomeState extends State<Home> {
   void _loadAsignature() async {
     await loadDataUser();
     final user = context.read<DataUserProvider>().userViewModel;
+    final grados = user.value.grado ?? [];
 
-    grado = user.value.grado!.first.programCode;
+    if (grados.isEmpty || grados.first.programCode == null) {
+      loading.value = false;
+      return;
+    }
+
+    grado = grados.first.programCode;
     context.read<GradoProvider>().grado = grado!;
     loading.value = true;
 
@@ -386,12 +392,12 @@ class _HomeState extends State<Home> {
                                   );
                                   if (academy != null) {
                                     final typeLevel = academy!.compare(score!);
-                           
+
                                     level = typeLevel!.findLevelByPuntaje(
                                       score,
                                     );
 
-                                             print(["typeLevel---",level!.toJson()]);
+                                    print(["typeLevel---", level!.toJson()]);
                                     colorLevel = score == '0'
                                         ? student.getCurrentColor(
                                             e.id!,
@@ -404,16 +410,16 @@ class _HomeState extends State<Home> {
                                             ),
                                           );
                                   }
-                                 
+
                                   return e.getRandomChildren().isNotEmpty
                                       ? Subject(
                                           text: e.value!,
                                           tag: e.value!,
                                           color: colorLevel,
                                           previeColor: colorLevel,
-                                          animation:
-                                              level==null?
-                                              "nivel_0": level.level!,
+                                          animation: level == null
+                                              ? "nivel_0"
+                                              : level.level!,
                                           onClick: () async {
                                             final numb =
                                                 await _localstorageShared

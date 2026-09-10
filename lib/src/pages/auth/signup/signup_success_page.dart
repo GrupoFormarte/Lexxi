@@ -54,10 +54,10 @@ class _SignupSuccessPageState extends State<SignupSuccessPage> {
                 children: [
                   Image.memory(
                     _imageBytes,
-                    width: 220,
-                    height: 220,
-                    fit: BoxFit.contain,
-                  ),
+                      width: 220,
+                      height: 220,
+                      fit: BoxFit.contain,
+                    ),
 
                   const SizedBox(height: 32),
 

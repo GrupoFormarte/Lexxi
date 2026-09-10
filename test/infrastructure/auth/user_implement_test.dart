@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:lexxi/infrastructure/auth/repositories/user_implement.dart';
@@ -7,7 +8,6 @@ import 'package:lexxi/infrastructure/auth/data_sources/remote_data_source.dart';
 import 'package:lexxi/infrastructure/auth/data_sources/local_data_source/localstorage_shared.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
 
 import 'user_implement_test.mocks.dart';
 

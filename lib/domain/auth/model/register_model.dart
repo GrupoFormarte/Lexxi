@@ -1,3 +1,4 @@
+import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
 class RegisterModel {
   static const int defaultTypeId = 4;
   String? name;
@@ -50,7 +51,7 @@ class RegisterModel {
     );
   }
 
-  factory RegisterModel.fromWizard(dynamic data) {
+  factory RegisterModel.fromWizard(RegisterWizardData data) {
     final birthday = data.birthday != null
         ? "${data.birthday!.year}-${data.birthday!.month.toString().padLeft(2, '0')}-${data.birthday!.day.toString().padLeft(2, '0')}"
         : '';

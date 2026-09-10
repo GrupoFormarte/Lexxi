@@ -1,4 +1,4 @@
-import 'package:lexxi/domain/pregunta/exeptions/user_exception.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:lexxi/domain/pregunta/models/pregunta_model.dart';
 import 'package:lexxi/domain/pregunta/repositories/pregunta_repository.dart';
 import 'package:injectable/injectable.dart';

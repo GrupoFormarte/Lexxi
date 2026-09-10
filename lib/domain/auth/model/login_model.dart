@@ -1,18 +1,11 @@
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
 class LoginModel {
   final String email;
   final String password;
-
+  
   LoginModel(
     this.email,
     this.password,
-  ) {
-    if (email.isEmpty || password.isEmpty) {
-      throw UserException(
-        'El email y la contraseña no pueden estar vacíos',
-      );
-    }
-  }
+  );
 
   Map<String, dynamic> toJson() {
     return {

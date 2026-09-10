@@ -19,7 +19,10 @@ class LocalstorageShared {
       case const (List<String>):
         return await sharedPref.setStringList(key, value);
       default:
-        return null;
+        throw ArgumentError(
+          'LocalstorageShared no soporta guardar valores de tipo '
+          '${value.runtimeType} (key: "$key")',
+        );
     }
   }
 
@@ -40,6 +43,12 @@ class LocalstorageShared {
 
       case const (List<String>):
         return sharedPref.getStringList(key);
+
+      default:
+        throw ArgumentError(
+          'LocalstorageShared no soporta leer valores de tipo $type '
+          '(key: "$key")',
+        );
     }
   }
 
@@ -69,6 +78,11 @@ class LocalstorageShared {
       case const (List<String>):
         await sharedPref.setStringList(key, value);
         break;
+      default:
+        throw ArgumentError(
+          'LocalstorageShared no soporta guardar valores de tipo '
+          '${value.runtimeType} (key: "$key")',
+        );
     }
   }
 }

@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
 import 'package:lexxi/domain/auth/model/register_model.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:lexxi/domain/auth/repositories/login_repository.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 
 @injectable
 class AuthService {

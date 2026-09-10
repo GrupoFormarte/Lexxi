@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:lexxi/config/env_config.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
@@ -25,7 +25,7 @@ class RemoteDataSource {
         url,
         headers: headers,
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       final respon = jsonDecode(response.body);
 
@@ -59,7 +59,6 @@ class RemoteDataSource {
     try {
       log('========== LOGIN PRINCIPAL ==========');
       log('URL: $url');
-      log('REQUEST: ${jsonEncode(data)}');
 
       final response = await http.post(
         url,
@@ -68,43 +67,44 @@ class RemoteDataSource {
       );
 
       log('STATUS CODE: ${response.statusCode}');
-      log('RESPONSE BODY: ${response.body}');
 
       final respon = jsonDecode(response.body);
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201 ||
-          response.statusCode == 202) {
-        final token = respon['token'] ?? respon['data']?['token'];
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 202) {
+        final message =
+            respon['message']?.toString() ??
+            respon['error']?.toString() ??
+            'Credenciales inválidas';
 
-        if (token == null || token is! String) {
-          throw UserException('El login no devolvió un token válido');
-        }
-
-        final jwtData = jwtDecode(token);
-
-        jwtData.payload['token'] = token;
-
-        final user = respon['data']?['user'];
-
-        if (user == null) {
-          throw UserException(
-            'El login no devolvió la información del usuario',
-          );
-        }
-
-        user['token'] = token;
-        user['_login_type'] = 'normal';
-
-        await EnvConfig.setTokenForMongo(token);
-
-        return Map<String, dynamic>.from(user);
+        throw NormalLoginFailedException(message);
       }
 
-      // Si falla el login principal, intenta SAF
-      log('⚠️ Login principal falló. Intentando SAF...');
+      final token = respon['token'] ?? respon['data']?['token'];
 
-      return await loginSaf({...data, 'captcha': false});
+      if (token == null || token is! String) {
+        throw UserException('El login no devolvió un token válido');
+      }
+
+      final jwtData = jwtDecode(token);
+
+      jwtData.payload['token'] = token;
+
+      final user = respon['data']?['user'];
+
+      if (user == null) {
+        throw UserException(
+          'El login no devolvió la información del usuario',
+        );
+      }
+
+      user['token'] = token;
+      user['_login_type'] = 'normal';
+
+      await EnvConfig.setTokenForMongo(token);
+
+      return Map<String, dynamic>.from(user);
     } catch (e, stackTrace) {
       log('❌ ERROR LOGIN: $e');
       log('STACKTRACE: $stackTrace');
@@ -264,12 +264,12 @@ class RemoteDataSource {
       );
       throw UserException(
         errorMessage,
-      ); // Retorna null en lugar de lanzar una excepción
+      );
     }
   }
 
   Future<Map<String, dynamic>?> getInfouUer(User user) async {
-    var headers = {'Authorization': 'Bear ${user.token}'};
+    var headers = {'Authorization': 'Bearer ${user.token}'};
     final Uri url = Uri.parse('$_baseUrl/user/profile/');
     var response = await http.get(url, headers: headers);
     final respon = jsonDecode(response.body)['user'];

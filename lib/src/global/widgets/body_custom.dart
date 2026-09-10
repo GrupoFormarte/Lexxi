@@ -86,23 +86,9 @@ class _CustomBodyState extends State<CustomBody> {
           height: 100.h,
           child: Stack(
             children: [
-              // Positioned(
-              //   bottom: -300,
-              //   child: Opacity(
-              //     opacity: 0.3,
-              //     child: Image.asset(
-              //       'assets/astronauta.png',
-              //       width: 100.w,
-              //       height: 100.h,
-              //     ),
-              //   ),
-              // ),
               Column(
                 children: [
-                  Padding(
-                    padding: padd,
-                    child: widget.appBar,
-                  ),
+                  Padding(padding: padd, child: widget.appBar),
                   Expanded(
                     child: CustomScrollView(
                       controller: _scrollController,
@@ -117,49 +103,62 @@ class _CustomBodyState extends State<CustomBody> {
                               widget.automaticallyImplyLeading,
                           backgroundColor: Colors.transparent,
                           flexibleSpace: LayoutBuilder(
-                            builder: (BuildContext context,
-                                BoxConstraints constraints) {
-                              var top = constraints.biggest.height;
-                              bool isExpanded = top > (kToolbarHeight + 40);
-                              return FlexibleSpaceBar(
-                                background: isExpanded
-                                    ? Padding(
-                                        padding: padd,
-                                        child: widget.header
-                                            .animate()
-                                            .fadeIn(
-                                                duration: const Duration(
-                                                    milliseconds: 300))
-                                            .moveY(
-                                                begin: 50,
-                                                end: 0,
-                                                duration: const Duration(
-                                                    milliseconds: 300)),
-                                      )
-                                    : Container(),
-                              );
-                            },
+                            builder:
+                                (
+                                  BuildContext context,
+                                  BoxConstraints constraints,
+                                ) {
+                                  var top = constraints.biggest.height;
+                                  bool isExpanded = top > (kToolbarHeight + 40);
+                                  return FlexibleSpaceBar(
+                                    background: isExpanded
+                                        ? Padding(
+                                            padding: padd,
+                                            child: widget.header
+                                                .animate()
+                                                .fadeIn(
+                                                  duration: const Duration(
+                                                    milliseconds: 300,
+                                                  ),
+                                                )
+                                                .moveY(
+                                                  begin: 50,
+                                                  end: 0,
+                                                  duration: const Duration(
+                                                    milliseconds: 300,
+                                                  ),
+                                                ),
+                                          )
+                                        : Container(),
+                                  );
+                                },
                           ),
                         ),
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Center(
-                              child: Text(
-                                widget.title,
-                                style: context.textTheme.titleLarge!.copyWith(
-                                  color: blackToWhite(context),
-                                ),
-                              )
-                                  .animate()
-                                  .fadeIn(
-                                      duration:
-                                          const Duration(milliseconds: 300))
-                                  .moveY(
-                                      begin: 20,
-                                      end: 0,
-                                      duration:
-                                          const Duration(milliseconds: 300)),
+                              child:
+                                  Text(
+                                        widget.title,
+                                        style: context.textTheme.titleLarge!
+                                            .copyWith(
+                                              color: blackToWhite(context),
+                                            ),
+                                      )
+                                      .animate()
+                                      .fadeIn(
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                      )
+                                      .moveY(
+                                        begin: 20,
+                                        end: 0,
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                      ),
                             ),
                           ),
                         ),
@@ -171,26 +170,37 @@ class _CustomBodyState extends State<CustomBody> {
                                   .userViewModel,
                               builder: (context, user, _) {
                                 final grads = user.grado ?? [];
-                                grado.value = grads.first.programCode!;
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  final gradoProvider =
-                                      Provider.of<GradoProvider>(context,
-                                          listen: false);
-                                  gradoProvider.idGrado = grads.first.id!;
-                                });
+                                final firstGrado = grads.isEmpty
+                                    ? null
+                                    : grads.first;
 
-                                if (!loadFirtsGrado) {
-                                  if (widget.needShortName) {
+                                if (firstGrado != null) {
+                                  grado.value = firstGrado.programCode ?? '';
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    if (!context.mounted ||
+                                        firstGrado.id == null) {
+                                      return;
+                                    }
+                                    final gradoProvider =
+                                        Provider.of<GradoProvider>(
+                                          context,
+                                          listen: false,
+                                        );
+                                    gradoProvider.idGrado = firstGrado.id!;
+                                  });
+
+                                  if (!loadFirtsGrado &&
+                                      firstGrado.programCode != null &&
+                                      firstGrado.programName != null &&
+                                      widget.changeGrade != null) {
                                     widget.changeGrade!(
-                                        grads.first.programCode!,
-                                        grads.first.programName!);
-                                  } else {
-                                    widget.changeGrade!(
-                                        grads.first.programCode!,
-                                        grads.first.programName!);
+                                      firstGrado.programCode!,
+                                      firstGrado.programName!,
+                                    );
+                                    loadFirtsGrado = true;
                                   }
-                                  loadFirtsGrado = true;
                                 }
 
                                 return SizedBox(
@@ -201,14 +211,22 @@ class _CustomBodyState extends State<CustomBody> {
                                     children: grads.map((e) {
                                       return GestureDetector(
                                         onTap: () {
+                                          if (e.programCode == null ||
+                                              e.id == null ||
+                                              e.programName == null) {
+                                            return;
+                                          }
                                           grado.value = e.programCode!;
                                           final gradoProvider =
                                               Provider.of<GradoProvider>(
-                                                  context,
-                                                  listen: false);
+                                                context,
+                                                listen: false,
+                                              );
                                           gradoProvider.idGrado = e.id!;
-                                          widget.changeGrade!(
-                                              e.programCode!, e.programName!);
+                                          widget.changeGrade?.call(
+                                            e.programCode!,
+                                            e.programName!,
+                                          );
                                         },
                                         child: ValueListenableBuilder(
                                           valueListenable: grado,
@@ -217,7 +235,7 @@ class _CustomBodyState extends State<CustomBody> {
                                               decoration: BoxDecoration(
                                                 gradient: g == e.programCode!
                                                     ? AppColors
-                                                        .linealGrdientGreen
+                                                          .linealGrdientGreen
                                                     : null,
                                                 borderRadius:
                                                     BorderRadius.circular(8),
@@ -225,24 +243,33 @@ class _CustomBodyState extends State<CustomBody> {
                                               margin: const EdgeInsets.all(8),
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 20),
+                                                    horizontal: 20,
+                                                  ),
                                               child: Center(
                                                 child: Text(
                                                   e.shortName!,
                                                   style: context
-                                                      .textTheme.titleLarge!
+                                                      .textTheme
+                                                      .titleLarge!
                                                       .copyWith(
-                                                    color: g == e.shortName!
-                                                        ? whiteToBlack(context)
-                                                        : blackToWhite(context),
-                                                  ),
+                                                        color:
+                                                            g == e.programCode
+                                                            ? whiteToBlack(
+                                                                context,
+                                                              )
+                                                            : blackToWhite(
+                                                                context,
+                                                              ),
+                                                      ),
                                                 ),
                                               ),
                                             ).animate().moveX(
-                                                begin: 100,
-                                                end: 0,
-                                                duration: const Duration(
-                                                    milliseconds: 300));
+                                              begin: 100,
+                                              end: 0,
+                                              duration: const Duration(
+                                                milliseconds: 300,
+                                              ),
+                                            );
                                           },
                                         ),
                                       );

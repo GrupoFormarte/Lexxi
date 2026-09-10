@@ -10,7 +10,7 @@ class EnvConfig {
       dotenv.get('BASE_URL', fallback: 'https://app.formarte.co/api');
 
   static String get baseUrl2 =>
-      dotenv.get('BASE_URL_2', fallback: 'https://api.formarte.co/api');
+      dotenv.get('BASE_URL_2', fallback: baseUrl);
 
   static String get authBaseUrl =>
       dotenv.get('AUTH_BASE_URL', fallback: 'https://app.formarte.co');
@@ -43,8 +43,6 @@ class EnvConfig {
 
   static Future<void> setTokenForMongo(String? token) async {
     _tokenForMongo = token;
-
-    // Persist to SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     if (token != null && token.isNotEmpty) {
       await prefs.setString(_tokenKey, token);

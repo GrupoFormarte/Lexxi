@@ -4,6 +4,7 @@ import 'package:lexxi/aplication/auth/login/bloc/login_event.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_state.dart';
 import 'package:lexxi/aplication/auth/use_case/login_use_case.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
+import 'package:lexxi/utils/loogers_custom.dart';
 
 @injectable
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
@@ -30,12 +31,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(const LoginFailure('Correo o contraseña inválidos'));
         return;
       }
-
-      print('================================');
-      print('LOGIN');
-      print('Tipo: ${event.type}');
-      print('Email: ${event.email}');
-      print('================================');
+      
+      logger.d('Intentando login (tipo: ${event.type})');
 
       final user = await _loginUseCase(loginModel, type: event.type);
 
@@ -44,15 +41,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         return;
       }
 
-      print('LOGIN EXITOSO');
-      print('Usuario: ${user.email}');
-      print('Tipo usuario: ${user.typeUser}');
-      print('Tiene token: ${user.token != null}');
+      logger.d('Login exitoso (tipoUsuario: ${user.typeUser})');
 
       emit(LoginSuccess(user, user.loginType ?? event.type));
     } catch (e, stackTrace) {
-      print('ERROR LOGIN: $e');
-      print(stackTrace);
+      logger.e('Error en login', error: e, stackTrace: stackTrace);
 
       emit(LoginFailure(e.toString()));
     }

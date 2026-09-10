@@ -20,7 +20,6 @@ void main() {
 
   group('LoginUseCase Tests', () {
     test('execute debe retornar User cuando la autenticación es exitosa', () async {
-      // Arrange
       final loginModel = LoginModel('test@example.com', 'password123');
       final expectedUser = User(
         id: 1,
@@ -32,7 +31,6 @@ void main() {
       when(mockLoginRepository.auth(loginModel))
           .thenAnswer((_) async => expectedUser);
 
-      // Act
       final result = await loginUseCase.call(loginModel);
 
       // Assert

@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:lexxi/aplication/pregunta/service/pregunta_service.dart';
 import 'package:lexxi/domain/pregunta/repositories/pregunta_repository.dart';
 import 'package:lexxi/domain/pregunta/models/pregunta_model.dart';
-import 'package:lexxi/domain/pregunta/exeptions/user_exception.dart';
 
 import 'pregunta_service_test.mocks.dart';
 
