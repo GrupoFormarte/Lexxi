@@ -420,30 +420,120 @@ class _ConfigScreenState extends State<ConfigScreen> {
   }
 
   Future<void> _scheduleDailyNotification(TimeOfDay time) async {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
-        tz.local, now.year, now.month, now.day, time.hour, time.minute);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    try {
+      print('[_scheduleDailyNotification] Iniciando programación de notificación para ${time.hour}:${time.minute}');
+
+      // Solicitar permisos de notificaciones si es necesario
+      final permissionGranted = await _requestNotificationPermissions();
+      if (!permissionGranted) {
+        print('[_scheduleDailyNotification] Permisos de notificación denegados');
+        if (mounted) {
+          MotionToast.warning(
+            description: const Text('Necesitas habilitar los permisos de notificaciones en la configuración'),
+            toastDuration: const Duration(seconds: 3),
+          ).show(context);
+        }
+        return;
+      }
+
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      tz.TZDateTime scheduledDate = tz.TZDateTime(
+          tz.local, now.year, now.month, now.day, time.hour, time.minute);
+
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+        print('[_scheduleDailyNotification] Fecha ajustada al siguiente día: $scheduledDate');
+      }
+
+      var androidDetails = const AndroidNotificationDetails(
+          'daily_notif_channel_id',
+          'Daily Notifications',
+          channelDescription: 'Daily reminder notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          enableVibration: true,
+          playSound: true,
+      );
+
+      var iOSDetails = const DarwinNotificationDetails();
+
+      var platformDetails = NotificationDetails(
+          android: androidDetails,
+          iOS: iOSDetails,
+          macOS: iOSDetails);
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'Recordatorio Diario',
+        '¡Es hora de tu recordatorio diario!',
+        scheduledDate,
+        platformDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+
+      print('[_scheduleDailyNotification] Notificación programada exitosamente para: $scheduledDate');
+
+      if (mounted) {
+        MotionToast.success(
+          description: Text('Recordatorio programado para ${formatTimeOfDay(time)}'),
+          toastDuration: const Duration(seconds: 2),
+        ).show(context);
+      }
+    } catch (e) {
+      print('[_scheduleDailyNotification] ERROR: $e');
+      if (mounted) {
+        MotionToast.error(
+          description: Text('Error al programar recordatorio: $e'),
+          toastDuration: const Duration(seconds: 3),
+        ).show(context);
+      }
     }
-    var androidDetails = const AndroidNotificationDetails(
-        'daily_notif_channel_id', 'Daily Notifications',
-        channelDescription: 'Daily reminder notifications',
-        importance: Importance.max);
-    var iOSDetails =
-        const DarwinNotificationDetails(); // Actualización para iOS
-    var platformDetails = NotificationDetails(
-        android: androidDetails, iOS: iOSDetails, macOS: iOSDetails);
- await flutterLocalNotificationsPlugin.zonedSchedule(
-  0, // id de la notificación
-  'Recordatorio Diario',
-  '¡Es hora de tu recordatorio diario!',
-  scheduledDate, // tz.TZDateTime
-  platformDetails, // NotificationDetails con Android/iOS configs
-  androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  matchDateTimeComponents: DateTimeComponents.time, // repetición diaria
-  uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-);
+  }
+
+  Future<bool> _requestNotificationPermissions() async {
+    try {
+      print('[_requestNotificationPermissions] Iniciando solicitud de permisos');
+
+      // Solicitar permisos para Android 13+
+      final androidImplementation = flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidImplementation != null) {
+        print('[_requestNotificationPermissions] Android implementation encontrada');
+
+        // Primero verificar si ya tenemos permiso de notificaciones
+        final hasNotificationPermission = await androidImplementation.areNotificationsEnabled();
+        print('[_requestNotificationPermissions] Permisos de notificaciones ya habilitados: $hasNotificationPermission');
+
+        // Si no tiene permiso, solicitarlo
+        if (hasNotificationPermission != true) {
+          print('[_requestNotificationPermissions] Solicitando permiso de notificaciones...');
+          final notificationPermission = await androidImplementation.requestNotificationsPermission();
+          print('[_requestNotificationPermissions] Resultado permiso de notificaciones: $notificationPermission');
+
+          if (notificationPermission != true) {
+            print('[_requestNotificationPermissions] Permiso de notificaciones denegado');
+            return false;
+          }
+        }
+
+        // Ahora solicitar permiso de alarmas exactas (este siempre debe solicitarse cuando se necesita)
+        print('[_requestNotificationPermissions] Solicitando permiso de alarmas exactas...');
+        final exactAlarmPermission = await androidImplementation.requestExactAlarmsPermission();
+        print('[_requestNotificationPermissions] Resultado permiso de alarmas exactas: $exactAlarmPermission');
+
+        return true; // Si llegamos aquí, al menos tenemos permisos de notificación
+      }
+
+      print('[_requestNotificationPermissions] No es Android, retornando true');
+      return true; // Para iOS o si no es necesario
+    } catch (e, stackTrace) {
+      print('[_requestNotificationPermissions] ERROR: $e');
+      print('[_requestNotificationPermissions] StackTrace: $stackTrace');
+      return false;
+    }
   }
 
   Future<void> showPendingNotifications() async {
@@ -495,18 +585,18 @@ class _ConfigScreenState extends State<ConfigScreen> {
         },
       );
 
-      if (pickedFile != null) {
+      if (pickedFile != null) {    final dataUserProvider = context.read<DataUserProvider>();
+          final currentUser = dataUserProvider.userViewModel.value;
+
         final Uint8List imageBytes = await pickedFile.readAsBytes();
         final String fileName =
             '${student?.idStudent}_profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
         final String imageUrl =
-            await _uploadImageUseCase.execute(imageBytes, fileName);
-
+            await _uploadImageUseCase.execute(imageBytes, fileName
+);
         if (mounted) {
-          final dataUserProvider = context.read<DataUserProvider>();
-          final currentUser = dataUserProvider.userViewModel.value;
-
+      
           final updatedUser = UserViewModel(
             id: currentUser.id,
             name: currentUser.name,

@@ -1,7 +1,7 @@
 name: lexxi
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.54+58
+version: 1.0.60+62
 
 environment:
   sdk: ^3.9.0
