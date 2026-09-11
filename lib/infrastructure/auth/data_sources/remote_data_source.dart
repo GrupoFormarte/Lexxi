@@ -2,16 +2,14 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:lexxi/config/env_config.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 import 'package:lexxi/domain/auth/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:jwt_decode_full/jwt_decode_full.dart';
-import 'package:lexxi/utils/loogers_custom.dart';
 
 @injectable
 class RemoteDataSource {
-  // Las URLs ahora se obtienen desde las variables de entorno
   String get _baseUrl => EnvConfig.authBaseUrl;
   String get _urlSaf => EnvConfig.authSafUrl;
 
@@ -20,14 +18,15 @@ class RemoteDataSource {
   RemoteDataSource();
 
   Future register(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/api/auth/register');
-    final Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Uri url = Uri.parse('$_baseUrl/auth/register-app');
+    final Map<String, String> headers = EnvConfig.defaultHeaders;
     try {
       final response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 30));
+
       final respon = jsonDecode(response.body);
 
       if (response.statusCode == 200 ||
@@ -35,13 +34,16 @@ class RemoteDataSource {
           response.statusCode == 202) {
         return respon;
       } else {
+        final msg =
+            respon['message']?.toString() ??
+            respon['error']?.toString() ??
+            'Error desconocido';
         _getErrorMessage(
           response.statusCode,
           nameMethod: 'register',
           e: response.body,
         );
-
-        throw UserException(respon['message']);
+        throw UserException(msg);
       }
     } catch (e) {
       _getErrorMessage(500, nameMethod: 'register', e: e.toString());
@@ -50,33 +52,65 @@ class RemoteDataSource {
   }
 
   Future<Map<String, dynamic>?> login(Map<String, dynamic> data) async {
-    final Uri url = Uri.parse('$_baseUrl/api/auth/login');
-    final Map<String, String> headers = {'Content-Type': 'application/json'};
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(data),
-    );
-    final respon = jsonDecode(response.body);
-    print(  ['login userData',respon]);
+    final Uri url = Uri.parse('$_baseUrl/auth/login');
 
-    if (response.statusCode == 200 ||
-        response.statusCode == 201 ||
-        response.statusCode == 202) {
-      final jwtData = jwtDecode(respon['token']??respon['data']['token']);
-      jwtData.payload['token'] = respon['token']??respon['data']['token'];
-      respon['data']['user']['token'] =
-          respon['token']??respon['data']['token'];
-      final Map<String, dynamic> userData = respon['data']['user'];
-      // print(['$_baseUrl/auth/login/', respon]);
-      await EnvConfig.setTokenForMongo(
-        respon['token']??respon['data']['token'],
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
+
+    try {
+      log('========== LOGIN PRINCIPAL ==========');
+      log('URL: $url');
+
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
       );
 
-      return userData;
-    } else {
-      final dat = loginSaf(data);
-      return dat;
+      log('STATUS CODE: ${response.statusCode}');
+
+      final respon = jsonDecode(response.body);
+
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 202) {
+        final message =
+            respon['message']?.toString() ??
+            respon['error']?.toString() ??
+            'Credenciales inválidas';
+
+        throw NormalLoginFailedException(message);
+      }
+
+      final token = respon['token'] ?? respon['data']?['token'];
+
+      if (token == null || token is! String) {
+        throw UserException('El login no devolvió un token válido');
+      }
+
+      final jwtData = jwtDecode(token);
+
+      jwtData.payload['token'] = token;
+
+      final user = respon['data']?['user'];
+
+      if (user == null) {
+        throw UserException(
+          'El login no devolvió la información del usuario',
+        );
+      }
+
+      user['token'] = token;
+      user['_login_type'] = 'normal';
+
+      await EnvConfig.setTokenForMongo(token);
+
+      return Map<String, dynamic>.from(user);
+    } catch (e, stackTrace) {
+      log('❌ ERROR LOGIN: $e');
+      log('STACKTRACE: $stackTrace');
+
+      if (e is UserException) rethrow;
+      throw UserException(e.toString());
     }
   }
 
@@ -88,34 +122,41 @@ class RemoteDataSource {
       headers: headers,
       body: jsonEncode(data),
     );
-    final respon = jsonDecode(response.body);
+    final decodedResponse = jsonDecode(response.body);
+    final respon = decodedResponse is Map<String, dynamic>
+        ? decodedResponse
+        : <String, dynamic>{};
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         response.statusCode == 202) {
-      final jwtData = jwtDecode(respon['token']);
-      jwtData.payload['token'] = respon['token'];
+      final token = respon['token'];
+      if (token is! String || token.isEmpty) {
+        throw UserException('El login SAF no devolvió un token válido');
+      }
+
+      final jwtData = jwtDecode(token);
+      jwtData.payload['token'] = token;
       final data = await getDataUser(jwtData.payload);
 
       final tokenMongo = await getTokenApiMongo(
         jwtData.payload['id'],
-        jwtData.payload['token'],
+        token,
       );
 
       await EnvConfig.setTokenForMongo(tokenMongo);
 
       if (data != null) {
         data['institute'] = jwtData.payload['institute'];
+        data['_login_type'] = 'saf';
       }
       log(data.toString());
       return data;
     } else {
-      final errorMessage = _getErrorMessage(
-        response.statusCode,
-        nameMethod: '${response.body}--login',
-      );
-      throw UserException(
-        respon['message'],
-      ); // Retorna null en lugar de lanzar una excepción
+      final message =
+          respon['message']?.toString() ??
+          respon['error']?.toString() ??
+          _getErrorMessage(response.statusCode, nameMethod: 'login SAF');
+      throw UserException(message);
     }
   }
 
@@ -130,7 +171,7 @@ class RemoteDataSource {
       headers: headers,
     );
     final respon = jsonDecode(response.body);
-        print(['---',respon]);
+    print(['---', respon]);
 
     if (response.statusCode == 200) {
       respon['token'] = token;
@@ -141,24 +182,21 @@ class RemoteDataSource {
 
   Future<String?> getTokenApiMongo(int id, String token) async {
     try {
-      var headers = {
+      final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       };
 
-      final Uri url = Uri.parse('$_baseUrl/api/auth/podium-login');
-
-      var response = await http.post(
+      final Uri url = Uri.parse('${EnvConfig.baseUrl}/auth/podium-login');
+      final response = await http.post(
         url,
-        body: jsonEncode({"userId": '$id', "token": token}),
+        body: jsonEncode({'userId': '$id', 'token': token}),
         headers: headers,
       );
-            print([{"userId": '$id', "token": token},'$_baseUrl/auth/podium-login',]);
-
+      print(['${EnvConfig.baseUrl}/auth/podium-login']);
 
       final responseData = jsonDecode(response.body);
-
       if (response.statusCode == 200 && responseData['success'] == true) {
         return responseData['data']['token'];
       }
@@ -177,11 +215,11 @@ class RemoteDataSource {
   }
 
   Future<List<dynamic>> _enrolls(int idS) async {
-    var request = http.Request(
+    final request = http.Request(
       'GET',
       Uri.parse('$_baseUrl/module/enrolls/student/$idS'),
     );
-    http.StreamedResponse response = await request.send();
+    final response = await request.send();
     try {
       final respon = jsonDecode(await response.stream.bytesToString());
       return respon['enrollments'];
@@ -226,12 +264,12 @@ class RemoteDataSource {
       );
       throw UserException(
         errorMessage,
-      ); // Retorna null en lugar de lanzar una excepción
+      );
     }
   }
 
   Future<Map<String, dynamic>?> getInfouUer(User user) async {
-    var headers = {'Authorization': 'Bear ${user.token}'};
+    var headers = {'Authorization': 'Bearer ${user.token}'};
     final Uri url = Uri.parse('$_baseUrl/user/profile/');
     var response = await http.get(url, headers: headers);
     final respon = jsonDecode(response.body)['user'];

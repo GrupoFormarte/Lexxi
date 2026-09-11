@@ -1,7 +1,4 @@
 import 'dart:io';
-
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lexxi/config/env_config.dart';
@@ -14,10 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-
-// import 'firebase_options.dart';
 import 'injection.dart';
-// import 'src/global/messaging/firebase_messaging_service.dart';
 import 'src/global/design_system/theme_system.dart';
 import 'src/routes/routes_import.dart';
 
@@ -32,9 +26,6 @@ Future<void> main() async {
 
   ignoreBadCertificates();
 
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
   configureDependencies();
   tz.initializeTimeZones();
   var bogota = tz.getLocation('America/Bogota');
@@ -57,31 +48,6 @@ Future<void> main() async {
       iOS: initializationSettingsDarwin);
 
   await flutterLocalNotificationsPlugin.initialize(initSettings);
-
-  // Solicitar permisos de notificación en Android 13+
-  if (Platform.isAndroid) {
-    final androidImplementation = flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-
-    if (androidImplementation != null) {
-      await androidImplementation.requestNotificationsPermission();
-    }
-  }
-
-//  FirebaseMessagingService.requestPermission();
-//   FirebaseMessagingService.getToken();
-
-//   FirebaseMessagingService.onMessage = (RemoteMessage message) {
-//     // Manejar la notificación cuando la app está en primer plano
-//     print('Foreground message received: ${message.notification?.title} - ${message.notification?.body}');
-//     // Aquí puedes mostrar un diálogo, notificación local, etc.
-//   };
-
-//   FirebaseMessagingService.onMessageOpenedApp = (RemoteMessage message) {
-//     // Manejar la notificación cuando la app está en segundo plano y se abre por una notificación
-//     print('Notification clicked: ${message.notification?.title} - ${message.notification?.body}');
-//     // Aquí puedes navegar a una pantalla específica, mostrar un diálogo, etc.
-//   };
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ThemeController(true)),
     ChangeNotifierProvider(

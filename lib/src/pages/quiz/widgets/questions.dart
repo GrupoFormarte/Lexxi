@@ -8,7 +8,6 @@ import 'package:lexxi/src/global/extensions/build_context_ext.dart';
 import 'package:lexxi/src/global/utils/change_colors.dart';
 import 'package:lexxi/src/global/widgets/gradient_button.dart';
 import 'package:lexxi/src/pages/quiz/widgets/quill_read.dart';
-import 'package:lexxi/utils/html_content_parser.dart';
 import 'package:sizer/sizer.dart';
 
 class Questions extends StatefulWidget {

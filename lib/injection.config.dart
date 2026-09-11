@@ -14,8 +14,12 @@ import 'package:injectable/injectable.dart' as _i526;
 
 import 'aplication/academic_level/academic_level_use_case.dart' as _i998;
 import 'aplication/asignatura/service/asignatura_service.dart' as _i515;
+import 'aplication/auth/login/bloc/login_bloc.dart' as _i233;
+import 'aplication/auth/register/bloc/register_bloc.dart' as _i481;
+import 'aplication/auth/register/location/location_cubit.dart' as _i519;
 import 'aplication/auth/service/auth_service.dart' as _i678;
 import 'aplication/auth/use_case/login_use_case.dart' as _i1027;
+import 'aplication/auth/use_case/register_use_case.dart' as _i977;
 import 'aplication/componente_educativo/componente_educativo_use_case.dart'
     as _i220;
 import 'aplication/conexion_online/conexion_online_use_case.dart' as _i233;
@@ -111,6 +115,9 @@ _i174.GetIt initGetIt(
       gh<_i905.LocalstorageShared>(),
     ),
   );
+  gh.factory<_i977.RegisterUseCase>(
+    () => _i977.RegisterUseCase(gh<_i316.LoginRepository>()),
+  );
   gh.factory<_i1027.LoginUseCase>(
     () => _i1027.LoginUseCase(gh<_i316.LoginRepository>()),
   );
@@ -139,8 +146,15 @@ _i174.GetIt initGetIt(
       gh<_i839.ComponenteEducativoRepository>(),
     ),
   );
+  gh.factory<_i481.RegisterBloc>(
+    () => _i481.RegisterBloc(gh<_i977.RegisterUseCase>()),
+  );
+  gh.factory<_i233.LoginBloc>(() => _i233.LoginBloc(gh<_i1027.LoginUseCase>()));
   gh.factory<_i483.ItemDynamicUseCase>(
     () => _i483.ItemDynamicUseCase(gh<_i345.IItemRepository>()),
+  );
+  gh.factory<_i519.LocationCubit>(
+    () => _i519.LocationCubit(gh<_i483.ItemDynamicUseCase>()),
   );
   return getIt;
 }

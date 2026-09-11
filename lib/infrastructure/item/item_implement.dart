@@ -130,7 +130,6 @@ class ItemImplement implements IItemRepository {
         }
       }).toList();
     } catch (e) {
-      // Manejo del error, puedes adaptarlo según tu estructura
       rethrow;
     }
   }

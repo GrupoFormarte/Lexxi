@@ -3,14 +3,15 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:lexxi/domain/auth/model/user.dart' as _i4;
+import 'package:lexxi/domain/auth/model/user.dart' as _i5;
 import 'package:lexxi/infrastructure/auth/data_sources/local_data_source/localstorage_shared.dart'
-    as _i5;
+    as _i6;
 import 'package:lexxi/infrastructure/auth/data_sources/remote_data_source.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -36,85 +37,110 @@ class MockRemoteDataSource extends _i1.Mock implements _i2.RemoteDataSource {
   }
 
   @override
-  _i3.Future<dynamic> register(Map<String, dynamic>? data) =>
+  String get urlExample =>
+      (super.noSuchMethod(
+            Invocation.getter(#urlExample),
+            returnValue: _i3.dummyValue<String>(
+              this,
+              Invocation.getter(#urlExample),
+            ),
+          )
+          as String);
+
+  @override
+  set urlExample(String? value) => super.noSuchMethod(
+    Invocation.setter(#urlExample, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i4.Future<dynamic> register(Map<String, dynamic>? data) =>
       (super.noSuchMethod(
             Invocation.method(#register, [data]),
-            returnValue: _i3.Future<dynamic>.value(),
+            returnValue: _i4.Future<dynamic>.value(),
           )
-          as _i3.Future<dynamic>);
+          as _i4.Future<dynamic>);
 
   @override
-  _i3.Future<Map<String, dynamic>?> login(Map<String, dynamic>? data) =>
+  _i4.Future<Map<String, dynamic>?> login(Map<String, dynamic>? data) =>
       (super.noSuchMethod(
             Invocation.method(#login, [data]),
-            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
           )
-          as _i3.Future<Map<String, dynamic>?>);
+          as _i4.Future<Map<String, dynamic>?>);
 
   @override
-  _i3.Future<Map<String, dynamic>?> loginSaf(Map<String, dynamic>? data) =>
+  _i4.Future<Map<String, dynamic>?> loginSaf(Map<String, dynamic>? data) =>
       (super.noSuchMethod(
             Invocation.method(#loginSaf, [data]),
-            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
           )
-          as _i3.Future<Map<String, dynamic>?>);
+          as _i4.Future<Map<String, dynamic>?>);
 
   @override
-  _i3.Future<Map<String, dynamic>?> getDataUser(Map<String, dynamic>? data) =>
+  _i4.Future<Map<String, dynamic>?> getDataUser(Map<String, dynamic>? data) =>
       (super.noSuchMethod(
             Invocation.method(#getDataUser, [data]),
-            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
           )
-          as _i3.Future<Map<String, dynamic>?>);
+          as _i4.Future<Map<String, dynamic>?>);
 
   @override
-  _i3.Future<bool> newPassword(
+  _i4.Future<String?> getTokenApiMongo(int? id, String? token) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTokenApiMongo, [id, token]),
+            returnValue: _i4.Future<String?>.value(),
+          )
+          as _i4.Future<String?>);
+
+  @override
+  _i4.Future<bool> newPassword(
     String? password,
     String? newPassword,
     String? token,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#newPassword, [password, newPassword, token]),
-            returnValue: _i3.Future<bool>.value(false),
+            returnValue: _i4.Future<bool>.value(false),
           )
-          as _i3.Future<bool>);
+          as _i4.Future<bool>);
 
   @override
-  _i3.Future<Map<String, dynamic>?> getInfouUer(_i4.User? user) =>
+  _i4.Future<Map<String, dynamic>?> getInfouUer(_i5.User? user) =>
       (super.noSuchMethod(
             Invocation.method(#getInfouUer, [user]),
-            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+            returnValue: _i4.Future<Map<String, dynamic>?>.value(),
           )
-          as _i3.Future<Map<String, dynamic>?>);
+          as _i4.Future<Map<String, dynamic>?>);
 }
 
 /// A class which mocks [LocalstorageShared].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockLocalstorageShared extends _i1.Mock
-    implements _i5.LocalstorageShared {
+    implements _i6.LocalstorageShared {
   MockLocalstorageShared() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<bool?> addToSharedPref({
+  _i4.Future<bool?> addToSharedPref({
     required String? key,
     required dynamic value,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#addToSharedPref, [], {#key: key, #value: value}),
-            returnValue: _i3.Future<bool?>.value(),
+            returnValue: _i4.Future<bool?>.value(),
           )
-          as _i3.Future<bool?>);
+          as _i4.Future<bool?>);
 
   @override
-  _i3.Future<dynamic> readFromSharedPref(String? key, Type? type) =>
+  _i4.Future<dynamic> readFromSharedPref(String? key, Type? type) =>
       (super.noSuchMethod(
             Invocation.method(#readFromSharedPref, [key, type]),
-            returnValue: _i3.Future<dynamic>.value(),
+            returnValue: _i4.Future<dynamic>.value(),
           )
-          as _i3.Future<dynamic>);
+          as _i4.Future<dynamic>);
 
   @override
   dynamic deleteFromSharedPref(String? key) =>

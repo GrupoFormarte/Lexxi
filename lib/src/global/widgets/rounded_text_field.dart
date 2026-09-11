@@ -56,6 +56,7 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
     return Container(
       width: widget.width,
       margin: widget.margin,
+      height: 35,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50.0),
         // color: backgroundColor,

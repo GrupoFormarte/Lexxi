@@ -1,93 +1,86 @@
-// To parse this JSON data, do
-//
-//     final registerModel = registerModelFromJson(jsonString);
-
-import 'dart:convert';
-
-RegisterModel registerModelFromJson(String str) =>
-    RegisterModel.fromJson(json.decode(str));
-
-String registerModelToJson(RegisterModel data) => json.encode(data.toJson());
+import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
 
 class RegisterModel {
-  int? typeId;
-  String? numberId;
+  static const int defaultTypeId = 4;
   String? name;
-  String? secondName;
-  String? lastName;
-  String? secondLast;
   String? email;
-  String? cellpone;
-  String? localDistrict;
-  String? gender;
-  String? birthday;
-  String? programa;
+  String? password;
   String? typeUser;
-  Enroll? enroll;
+  String? birthday;
+  String? department;
+  String? localDistrict;
+  List<String>? howDidYouKnowUs;
+  String? howDidYouKnowUsOther;
+  String? examGoal;
 
-  RegisterModel(
-      {this.typeId,
-      this.numberId,
-      this.name,
-      this.secondName,
-      this.lastName,
-      this.secondLast,
-      this.email,
-      this.cellpone,
-      this.localDistrict,
-      this.gender,
-      this.birthday,
-      this.typeUser,
-      this.enroll,
-      this.programa});
-
-  factory RegisterModel.fromJson(Map<String, dynamic> json) => RegisterModel(
-        typeId: json["type_id"],
-        numberId: json["number_id"],
-        name: json["name"],
-        secondName: json["second_name"],
-        lastName: json["last_name"],
-        secondLast: json["second_last"],
-        email: json["email"],
-        cellpone: json["cellpone"],
-        localDistrict: json["local_district"],
-        gender: json["gender"],
-        birthday: json["birthday"],
-        programa: json["programa"],
-        typeUser: json["type_user"],
-        enroll: json["enroll"] == null ? null : Enroll.fromJson(json["enroll"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "type_id": typeId,
-        "number_id": numberId,
-        "name": name,
-        "second_name": secondName,
-        "last_name": lastName,
-        "second_last": secondLast,
-        "email": email,
-        "cellphone": cellpone,
-        "locate_district": localDistrict,
-        "gender": gender,
-        "birthday": birthday,
-        "programa": programa,
-        "type_user": typeUser,
-        "enroll": enroll?.toJson(),
-      };
-}
-
-class Enroll {
-  int? programId;
-
-  Enroll({
-    this.programId,
+  RegisterModel({
+    this.name,
+    this.birthday,
+    this.department,
+    this.localDistrict,
+    this.howDidYouKnowUs,
+    this.howDidYouKnowUsOther,
+    this.examGoal,
+    this.email,
+    this.password,
+    this.typeUser,
   });
 
-  factory Enroll.fromJson(Map<String, dynamic> json) => Enroll(
-        programId: json["program_id"],
-      );
+  factory RegisterModel.fromJson(Map<String, dynamic> json) {
+    final referralOptions =
+        json["howDidYouKnowUs"] ?? json["how_did_you_know_us"];
+
+    return RegisterModel(
+      name: json["name"]?.toString(),
+      birthday: json["birthday"]?.toString(),
+      department: json["department"]?.toString(),
+      localDistrict: (json["localDistrict"] ?? json["local_district"])
+          ?.toString(),
+      howDidYouKnowUs: referralOptions is List
+          ? referralOptions
+                .where((value) => value != null)
+                .map((value) => value.toString())
+                .toList()
+          : null,
+      howDidYouKnowUsOther:
+          (json["howDidYouKnowUsOther"] ?? json["how_did_you_know_us_other"])
+              ?.toString(),
+      examGoal: (json["examGoal"] ?? json["exam_goal"])?.toString(),
+      email: json["email"]?.toString().trim().toLowerCase(),
+      password: json["password"]?.toString(),
+      typeUser: (json["typeUser"] ?? json["type_user"] ?? 'student').toString(),
+    );
+  }
+
+  factory RegisterModel.fromWizard(RegisterWizardData data) {
+    final birthday = data.birthday != null
+        ? "${data.birthday!.year}-${data.birthday!.month.toString().padLeft(2, '0')}-${data.birthday!.day.toString().padLeft(2, '0')}"
+        : '';
+
+    return RegisterModel(
+      name: data.name,
+      birthday: birthday,
+      department: data.department?.name ?? '',
+      localDistrict: data.city?.name ?? '',
+      howDidYouKnowUs: data.referralOptions,
+      howDidYouKnowUsOther: data.referralOther,
+      examGoal: data.examGoal,
+      email: data.email.trim().toLowerCase(),
+      password: data.password,
+      typeUser: 'Student',
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "program_id": programId,
-      };
+    "name": name,
+    "birthday": birthday,
+    "department": department,
+    "localDistrict": localDistrict,
+    "howDidYouKnowUs": howDidYouKnowUs,
+    "howDidYouKnowUsOther": howDidYouKnowUsOther,
+    "examGoal": examGoal,
+    "email": email?.trim().toLowerCase(),
+    "password": password,
+    "typeUser": typeUser,
+  };
 }

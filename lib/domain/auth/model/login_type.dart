@@ -1,0 +1,4 @@
+enum LoginType {
+  normal,
+  saf,
+}

@@ -28,7 +28,7 @@ class _CirclesLevelState extends State<CirclesLevel>
   late Animation<double> _animationDialog;
   late AnimationController _controllerDialog;
   bool _isClicked = false;
-  bool _dialogShown = false; // Nueva variable para controlar si ya se mostró
+  bool _dialogShown = false;
 
   @override
   void initState() {

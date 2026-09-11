@@ -49,6 +49,7 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
     return Container(
       width: widget.width,
       margin: widget.margin,
+      height: 48,
       padding: EdgeInsets.symmetric(horizontal: widget.horizontal),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50.0),
@@ -63,10 +64,17 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
             isExpanded: widget.isExpanded,
             value: selectedValue,
             validator: widget.validator,
+            isDense: true,
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1,
+              color: AppColors.white,
+            ),
             hint: Text(
               widget.hintText,
               style: const TextStyle(color: AppColors.white, fontSize: 15),
               textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
             ),
             icon: const Icon(Icons.arrow_drop_down, color: AppColors.white),
             decoration: InputDecoration(
@@ -98,16 +106,31 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
                 borderSide: const BorderSide(color: Colors.red),
               ),
             ),
+            // Los items dentro de la lista desplegable ahora usan el
+            // mismo tamaño que el valor seleccionado (antes era 9,
+            // se veía diminuto comparado con el resto de la app).
             items: widget.items.map((T item) {
               return DropdownMenuItem<T>(
                 value: item,
                 child: Text(
                   overflow: TextOverflow.ellipsis,
                   widget.itemAsString(item),
-                  style: const TextStyle(color: AppColors.white),
+                  style: const TextStyle(color: AppColors.white, fontSize: 15),
                 ),
               );
             }).toList(),
+            selectedItemBuilder: (context) {
+              return widget.items.map((T item) {
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    widget.itemAsString(item),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: AppColors.white, fontSize: 15),
+                  ),
+                );
+              }).toList();
+            },
             onChanged: (T? newValue) {
               setState(() {
                 selectedValue = newValue;
@@ -116,7 +139,7 @@ class _RoundedDropdownState<T> extends State<RoundedDropdown<T>> {
                 widget.onChanged!(newValue);
               }
             },
-            dropdownColor: ColorPalette.primary.withOpacity(0.5),
+            dropdownColor: ColorPalette.primary,
           ),
         ),
       ),

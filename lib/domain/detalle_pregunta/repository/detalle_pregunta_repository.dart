@@ -7,5 +7,4 @@ abstract class IPreguntaRepository {
   Future<List<DetallePregunta>> getAllPreguntas();
   Future<DetallePregunta> getPreguntaById(String id);
   Future<void> updatePregunta(String id, Map<String, dynamic> preguntaData);
-  // Future<void> deletePregunta(String id);
 }

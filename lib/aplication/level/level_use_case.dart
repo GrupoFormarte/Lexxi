@@ -11,10 +11,6 @@ class LevelUseCase {
 
 LevelUseCase(this._levelRepository);
 
-
-
-
-
 Future<Level?>get({required String id, required String score}){
 
 

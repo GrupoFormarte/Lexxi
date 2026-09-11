@@ -1,5 +1,3 @@
-
-
 import '../model/componente_educativo.dart';
 
 abstract class ComponenteEducativoRepository {

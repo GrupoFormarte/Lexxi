@@ -3,10 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @injectable
 class LocalstorageShared {
-// Add to Shared Pref
    Future<bool?> addToSharedPref(
       {required String key, required var value}) async {
-    // Shared Pref instanse
     var sharedPref = await SharedPreferences.getInstance();
 
     switch (value.runtimeType) {
@@ -21,16 +19,15 @@ class LocalstorageShared {
       case const (List<String>):
         return await sharedPref.setStringList(key, value);
       default:
-        return null;
+        throw ArgumentError(
+          'LocalstorageShared no soporta guardar valores de tipo '
+          '${value.runtimeType} (key: "$key")',
+        );
     }
   }
 
-  // Read From Shared Pref
  Future<dynamic>  readFromSharedPref(String key, Type type) async {
-    // Shared Pref instanse
     var sharedPref = await SharedPreferences.getInstance();
-
-    // Read Data
     switch (type) {
       case int:
         return sharedPref.getInt(key);
@@ -46,6 +43,12 @@ class LocalstorageShared {
 
       case const (List<String>):
         return sharedPref.getStringList(key);
+
+      default:
+        throw ArgumentError(
+          'LocalstorageShared no soporta leer valores de tipo $type '
+          '(key: "$key")',
+        );
     }
   }
 
@@ -75,6 +78,11 @@ class LocalstorageShared {
       case const (List<String>):
         await sharedPref.setStringList(key, value);
         break;
+      default:
+        throw ArgumentError(
+          'LocalstorageShared no soporta guardar valores de tipo '
+          '${value.runtimeType} (key: "$key")',
+        );
     }
   }
 }

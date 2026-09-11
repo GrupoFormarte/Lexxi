@@ -16,7 +16,6 @@ class UserViewModel {
   String? lastName;
   String? secondLast;
   int? typeId;
-  String? numberId;
   String? email;
   String? gender;
   String? phone;
@@ -38,7 +37,6 @@ class UserViewModel {
     this.lastName,
     this.secondLast,
     this.typeId,
-    this.numberId,
     this.email,
     this.gender,
     this.phone,
@@ -61,7 +59,6 @@ class UserViewModel {
         lastName: json["last_name"],
         secondLast: json["second_last"],
         typeId: json["type_id"],
-        numberId: json["number_id"],
         email: json["email"],
         gender: json["gender"],
         phone: json["phone"],
@@ -86,7 +83,6 @@ class UserViewModel {
         "last_name": lastName,
         "second_last": secondLast,
         "type_id": typeId,
-        "number_id": numberId,
         "email": email,
         "gender": gender,
         "phone": phone,

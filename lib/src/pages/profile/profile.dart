@@ -80,7 +80,7 @@ class _ProfileState extends State<Profile> {
                 context.router.pushNamed('/config');
               },
               name: Text(
-                "${user.name!} ${user.lastName!}",
+                "${user.name}",
                 style: context.textTheme.titleMedium!
                     .copyWith(color: blackToWhite(context)),
               ),

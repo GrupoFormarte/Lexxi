@@ -57,8 +57,4 @@ class DetailPreguntasUseCase {
       String id, Map<String, dynamic> preguntaData) async {
     await preguntaRepository.updatePregunta(id, preguntaData);
   }
-
-  // Future<void> eliminarPregunta(String id) async {
-  //   await preguntaRepository.deletePregunta(id);
-  // }
 }

@@ -11,7 +11,6 @@ class StudentImplement implements StudentsRepositorie {
   final ApiService dbCrud;
 
   String nameCollection = "students/Estudiantes";
-  //  String answersCollection = "system/Respuestas";
   String answersCollection = "system/resultados_preguntas";
   String difficultyCollection = "system/grado_dificultad";
   String countersCollection = "system/resultados_preguntas";

@@ -1,7 +1,6 @@
 import 'package:lexxi/domain/detalle_pregunta/model/pregunta.dart';
 import 'package:lexxi/domain/detalle_pregunta/repository/detalle_pregunta_repository.dart';
 import 'package:lexxi/infrastructure/api_service/api_service.dart';
-import 'package:lexxi/utils/loogers_custom.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: IPreguntaRepository)
@@ -47,7 +46,4 @@ class DetallePreguntaImplement implements IPreguntaRepository {
         id: id, data: preguntaData, nameCollection: collectionName);
   }
 
-  // Future<void> deletePregunta(String id) {
-  //   // return dbCrud.delete(id: id, nameCollection: collectionName);
-  // }
 }

@@ -21,7 +21,7 @@ Este proyecto utiliza variables de entorno para gestionar configuraciones sensib
   - Desarrollo: `https://dev-mongo.plataformapodium.com/api`
   - Local: `https://105kt18s-3000.use2.devtunnels.ms/api`
 
-- `BASE_URL_2`: URL base secundaria de la API
+- `BASE_URL_2`: URL base secundaria opcional. Si no se define, usa `BASE_URL`.
   - Producción: `https://api.formarte.co/api`
   - Desarrollo: `https://dev-mongo.plataformapodium.com/api`
 

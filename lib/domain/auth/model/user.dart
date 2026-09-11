@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:lexxi/domain/auth/model/login_type.dart';
+
 User userFromJson(String str) => User.fromJson(json.decode(str));
 
 String userToJson(User data) => json.encode(data.toJson());
@@ -11,11 +13,6 @@ String userToJson(User data) => json.encode(data.toJson());
 class User {
   dynamic id;
   String? name;
-  String? secondName;
-  String? lastName;
-  String? secondLast;
-  int? typeId;
-  String? numberId;
   String? email;
   String? gender;
   int? active;
@@ -31,15 +28,11 @@ class User {
   String? typeUser;
   int? institute;
   List<Grado>? grado;
+  LoginType? loginType;
 
   User({
     this.id,
     this.name,
-    this.secondName,
-    this.lastName,
-    this.secondLast,
-    this.typeId,
-    this.numberId,
     this.email,
     this.gender,
     this.phone,
@@ -55,6 +48,7 @@ class User {
     this.active,
     this.grado,
     this.institute,
+    this.loginType,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -85,12 +79,7 @@ class User {
         id: json["id"] ?? json["_id"],
         name: json["name"],
         institute: json["institute"],
-        secondName: json["second_name"],
-        lastName: json["last_name"],
-        secondLast: json["second_last"],
-        typeId: json["type_id"],
         typeUser: json["type_user"],
-        numberId: json["identification_number"],
         email: json["email"],
         gender: json["gender"],
         phone: json["phone"],
@@ -104,6 +93,11 @@ class User {
         token: json["token"],
         active: json["active"],
         grado: gradoList,
+        loginType: json["_login_type"] == "saf"
+          ? LoginType.saf
+          : json["_login_type"] == "normal"
+            ? LoginType.normal
+            : null,
       );
     } catch (e, stackTrace) {
       print('[User.fromJson] ERROR CRÍTICO: $e');
@@ -116,12 +110,7 @@ class User {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "second_name": secondName,
-        "last_name": lastName,
-        "second_last": secondLast,
-        "type_id": typeId,
         "type_user": typeUser,
-        "number_id": numberId,
         "email": email,
         "gender": gender,
         "phone": phone,
@@ -135,6 +124,7 @@ class User {
         "token": token,
         "active": active,
         "institute": institute,
+        "_login_type": loginType?.name,
         "grado": grado == null
             ? []
             : List<dynamic>.from(grado!.map((x) => x.toJson())),

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lexxi/domain/auth/model/login_model.dart';
-import 'package:lexxi/domain/auth/exeptions/user_exception.dart';
+import 'package:lexxi/domain/core/exceptions/user_exception.dart';
 
 void main() {
   group('LoginModel Tests', () {

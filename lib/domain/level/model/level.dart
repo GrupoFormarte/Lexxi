@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final level = levelFromJson(jsonString);
-
 import 'dart:convert';
 
 Level levelFromJson(String str) => Level.fromJson(json.decode(str));
