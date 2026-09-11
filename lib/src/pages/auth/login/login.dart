@@ -10,7 +10,6 @@ import 'package:lexxi/src/global/colors_custom.dart';
 import 'package:lexxi/src/global/design_system/typography.dart';
 import 'package:lexxi/src/global/widgets/gradient_button.dart';
 import 'package:lexxi/src/providers/data_user_provider.dart';
-import 'package:lexxi/utils/whatsapp.dart';
 import 'package:motion_toast/motion_toast.dart';
 
 @RoutePage()
@@ -255,7 +254,7 @@ class _LoginViewState extends State<_LoginView> {
 
                             const SizedBox(height: 16),
 
-                            if (lastError != null)
+                            /* if (lastError != null)
                               GestureDetector(
                                 onTap: () async {
                                   launchWhatsAppUri(
@@ -281,7 +280,7 @@ class _LoginViewState extends State<_LoginView> {
                                     ),
                                   ],
                                 ),
-                              ),
+                              ),*/
                           ],
                         ),
                       ),

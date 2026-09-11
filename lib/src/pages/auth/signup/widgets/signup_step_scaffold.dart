@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:lexxi/src/global/design_system/typography.dart';
 import 'package:lexxi/src/global/widgets/gradient_button.dart';
 import 'package:lexxi/src/pages/auth/signup/widgets/signup_progress_header.dart';
 
-class SignupStepScaffold extends StatelessWidget {
+class SignupStepScaffold extends StatefulWidget {
   final String? imageAsset;
   final String? title;
   final String? subtitle;
@@ -40,6 +41,37 @@ class SignupStepScaffold extends StatelessWidget {
   });
 
   @override
+  State<SignupStepScaffold> createState() => _SignupStepScaffoldState();
+}
+
+class _SignupStepScaffoldState extends State<SignupStepScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    _showErrorToast(widget.errorMessage);
+  }
+
+  @override
+  void didUpdateWidget(covariant SignupStepScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.errorMessage != oldWidget.errorMessage) {
+      _showErrorToast(widget.errorMessage);
+    }
+  }
+
+  void _showErrorToast(String? message) {
+    if (message == null || message.isEmpty) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      MotionToast.error(
+        toastDuration: const Duration(seconds: 3),
+        description: Text(message),
+      ).show(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
@@ -47,37 +79,37 @@ class SignupStepScaffold extends StatelessWidget {
         child: Column(
           children: [
             SignupProgressHeader(
-              currentStep: currentStep,
-              totalSteps: totalSteps,
-              onBack: onBack,
+              currentStep: widget.currentStep,
+              totalSteps: widget.totalSteps,
+              onBack: widget.onBack,
             ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    if (title != null) ...[
+                    if (widget.title != null) ...[
                       Text(
-                        title!,
+                        widget.title!,
                         textAlign: TextAlign.center,
                         style: AppTypography.headlineLarge.copyWith(
                           color: Colors.white,
                         ),
                       ),
                     ],
-                    if (imageAsset != null) ...[
+                    if (widget.imageAsset != null) ...[
                       const SizedBox(height: 10),
                       Image.asset(
-                        imageAsset!,
+                        widget.imageAsset!,
                         height: 280,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
                             const SizedBox(height: 180),
                       ),
                     ],
-                    if (subtitle != null) ...[
+                    if (widget.subtitle != null) ...[
                       const SizedBox(height: 10),
                       Text(
-                        subtitle!,
+                        widget.subtitle!,
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyMedium.copyWith(
                           color: Colors.white,
@@ -86,40 +118,30 @@ class SignupStepScaffold extends StatelessWidget {
                         ),
                       ),
                     ],
-                    content,
-                    if (description != null) ...[
+                    widget.content,
+                    if (widget.description != null) ...[
                       const SizedBox(height: 5),
                       Text(
-                        description!,
+                        widget.description!,
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyMediumItalic.copyWith(
                           color: Colors.white.withOpacity(0.8),
                         ),
                       ),
                     ],
-                    if (checkContent != null) ...[
+                    if (widget.checkContent != null) ...[
                       const SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Checkbox(
-                            value: checkValue,
-                            onChanged: onCheckChanged,
+                            value: widget.checkValue,
+                            onChanged: widget.onCheckChanged,
                             activeColor: Colors.white,
                             checkColor: Colors.black,
                           ),
-                          Expanded(child: checkContent!),
+                          Expanded(child: widget.checkContent!),
                         ],
-                      ),
-                    ],
-                    if (errorMessage != null) ...[
-                      const SizedBox(height: 16),
-                      Text(
-                        errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: Colors.redAccent[100],
-                        ),
                       ),
                     ],
                   ],
@@ -127,7 +149,7 @@ class SignupStepScaffold extends StatelessWidget {
               ),
             ),
 
-            if (isLoading)
+            if (widget.isLoading)
               const Padding(
                 padding: EdgeInsets.all(16),
                 child: CircularProgressIndicator(color: Colors.white),
@@ -136,8 +158,8 @@ class SignupStepScaffold extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: GradientButton(
-                  text: continueLabel,
-                  onPressed: onContinue ?? () {},
+                  text: widget.continueLabel,
+                  onPressed: widget.onContinue ?? () {},
                 ),
               ),
           ],

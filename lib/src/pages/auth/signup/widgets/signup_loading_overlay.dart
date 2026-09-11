@@ -3,7 +3,9 @@ import 'package:lexxi/src/global/design_system/color_palette.dart';
 import 'package:lottie/lottie.dart';
 
 class SignupLoadingOverlay extends StatefulWidget {
-  const SignupLoadingOverlay({super.key});
+  final VoidCallback? onAnimationComplete;
+
+  const SignupLoadingOverlay({super.key, this.onAnimationComplete});
 
   @override
   State<SignupLoadingOverlay> createState() => _SignupLoadingOverlayState();
@@ -26,6 +28,19 @@ class _SignupLoadingOverlayState extends State<SignupLoadingOverlay>
   }
 
   @override
+  void didUpdateWidget(covariant SignupLoadingOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onAnimationComplete == null &&
+        widget.onAnimationComplete != null &&
+        _controller.duration != null) {
+      _controller
+        ..stop()
+        ..value = 0;
+      _controller.forward().whenCompleteOrCancel(widget.onAnimationComplete!);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -38,9 +53,14 @@ class _SignupLoadingOverlayState extends State<SignupLoadingOverlay>
           'assets/json/profile-settings.json',
           controller: _controller,
           onLoaded: (composition) {
-            _controller
-              ..duration = composition.duration * 9
-              ..repeat();
+            _controller.duration = composition.duration;
+            final callback = widget.onAnimationComplete;
+            if (callback == null) {
+              _controller.repeat();
+              return;
+            }
+            _controller.value = 0;
+            _controller.forward().whenCompleteOrCancel(callback);
           },
           fit: BoxFit.contain,
         ),

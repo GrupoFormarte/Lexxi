@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lexxi/aplication/auth/auth_error_message_mapper.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_event.dart';
 import 'package:lexxi/aplication/auth/login/bloc/login_state.dart';
 import 'package:lexxi/aplication/auth/use_case/login_use_case.dart';
@@ -31,7 +32,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(const LoginFailure('Correo o contraseña inválidos'));
         return;
       }
-      
+
       logger.d('Intentando login (tipo: ${event.type})');
 
       final user = await _loginUseCase(loginModel, type: event.type);
@@ -47,7 +48,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e, stackTrace) {
       logger.e('Error en login', error: e, stackTrace: stackTrace);
 
-      emit(LoginFailure(e.toString()));
+      emit(LoginFailure(AuthErrorMessageMapper.map(e)));
     }
   }
 }

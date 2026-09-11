@@ -38,6 +38,10 @@ class _SignUpWizard extends StatelessWidget {
     SignupStep6Credentials(),
   ];
 
+  void _goToLogin(BuildContext context) {
+    context.router.replaceNamed('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,16 +52,15 @@ class _SignUpWizard extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: ColorPalette.gradientBlueBackground,
         ),
-        child: BlocConsumer<RegisterBloc, RegisterState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            if (state.status == RegisterStatus.success) {
-              context.router.replaceNamed('/login');
-            }
-          },
+        child: BlocBuilder<RegisterBloc, RegisterState>(
           builder: (context, state) {
-            if (state.status == RegisterStatus.loading) {
-              return const SignupLoadingOverlay();
+            if (state.status == RegisterStatus.loading ||
+                state.status == RegisterStatus.success) {
+              return SignupLoadingOverlay(
+                onAnimationComplete: state.status == RegisterStatus.success
+                    ? () => _goToLogin(context)
+                    : null,
+              );
             }
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),

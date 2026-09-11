@@ -27,6 +27,17 @@ class _SignupStep2BirthdayState extends State<SignupStep2Birthday> {
       setState(() => _error = 'Selecciona tu fecha de nacimiento');
       return;
     }
+    final today = DateTime.now();
+    final selectedDate = DateTime(
+      _birthday!.year,
+      _birthday!.month,
+      _birthday!.day,
+    );
+    final currentDate = DateTime(today.year, today.month, today.day);
+    if (!selectedDate.isBefore(currentDate)) {
+      setState(() => _error = 'La fecha de nacimiento debe ser anterior a hoy');
+      return;
+    }
     setState(() => _error = null);
     context.read<RegisterBloc>().add(RegisterBirthdaySubmitted(_birthday!));
   }

@@ -1,4 +1,5 @@
 import 'package:lexxi/domain/auth/model/register_wizard_data.dart';
+
 class RegisterModel {
   static const int defaultTypeId = 4;
   String? name;
@@ -45,7 +46,7 @@ class RegisterModel {
           (json["howDidYouKnowUsOther"] ?? json["how_did_you_know_us_other"])
               ?.toString(),
       examGoal: (json["examGoal"] ?? json["exam_goal"])?.toString(),
-      email: json["email"]?.toString(),
+      email: json["email"]?.toString().trim().toLowerCase(),
       password: json["password"]?.toString(),
       typeUser: (json["typeUser"] ?? json["type_user"] ?? 'student').toString(),
     );
@@ -64,7 +65,7 @@ class RegisterModel {
       howDidYouKnowUs: data.referralOptions,
       howDidYouKnowUsOther: data.referralOther,
       examGoal: data.examGoal,
-      email: data.email,
+      email: data.email.trim().toLowerCase(),
       password: data.password,
       typeUser: 'Student',
     );
@@ -78,7 +79,7 @@ class RegisterModel {
     "howDidYouKnowUs": howDidYouKnowUs,
     "howDidYouKnowUsOther": howDidYouKnowUsOther,
     "examGoal": examGoal,
-    "email": email,
+    "email": email?.trim().toLowerCase(),
     "password": password,
     "typeUser": typeUser,
   };

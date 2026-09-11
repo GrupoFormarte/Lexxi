@@ -36,6 +36,10 @@ class _SignupStep1NameState extends State<SignupStep1Name> {
       setState(() => _error = 'Cuéntanos tu nombre para continuar');
       return;
     }
+    if (!RegExp(r'^[\p{L} ]+$', unicode: true).hasMatch(name)) {
+      setState(() => _error = 'El nombre solo puede contener letras');
+      return;
+    }
     setState(() => _error = null);
     context.read<RegisterBloc>().add(RegisterNameSubmitted(name));
   }
@@ -51,6 +55,7 @@ class _SignupStep1NameState extends State<SignupStep1Name> {
       description: 'Esto para personalizar tu experiencia.',
       onContinue: _continue,
       onBack: () => context.router.maybePop(),
+      errorMessage: _error,
       content: TextField(
         controller: _controller,
         textCapitalization: TextCapitalization.words,
@@ -59,8 +64,6 @@ class _SignupStep1NameState extends State<SignupStep1Name> {
         decoration: InputDecoration(
           hintText: 'Escribe tu nombre',
           hintStyle: TextStyle(color: ColorPalette.primary.withOpacity(0.4)),
-          errorText: _error,
-          errorStyle: const TextStyle(color: Colors.redAccent),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
